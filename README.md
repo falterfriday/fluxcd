@@ -1,23 +1,23 @@
 # FluxCD
 
 ## Description
-- This repository utilizes FluxCD to control the state of my homelab clusters
+- This repository utilizes FluxCD to control homelab cluster state
 
 ## Cluster Details
 
-### Development
+### Staging
 - Kubernetes: rke2
-- Nodes: 6
-    - server: 3
+- Nodes: 4
+    - server: 1
     - agent: 3
-- os: ubuntu24
-- arch: amd64
+- OS: ubuntu24
+- Arch: amd64
 
 ### Production
 - Kubernetes: rke2
-- Nodes: 3
-    - Server: 1
-    - Agent: 2
+- Nodes: 6
+    - Server: 3
+    - Agent: 3
 - OS: ubuntu24
 - Arch: amd64
 
