@@ -43,6 +43,7 @@ spec:
         name: ip-address-pool
       patch: |
         - op: add
-          path: /spec/addresses
-          value: 
+          path: /spec
+          value:
+            addresses:
             - "10.120.1.200/29"
