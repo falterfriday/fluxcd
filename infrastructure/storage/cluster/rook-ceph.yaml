@@ -84,6 +84,10 @@ spec:
         iteration: 1
       allowUninstallWithVolumeClaimsPresent: false
     removeOSDsIfOutAndSafeToRemove: false
+    cephFileSystems:
+      - name: ceph-filesystem
+        storageClass:
+          enabled: false
     cephObjectStores:
       - name: ceph-objectstore
         spec:
