@@ -84,6 +84,13 @@ spec:
         iteration: 1
       allowUninstallWithVolumeClaimsPresent: false
     removeOSDsIfOutAndSafeToRemove: false
+    cephBlockPools:
+      - name: ceph-blockpool
+        storageClass:
+          enabled: true
+          name: ceph-block
+          isDefault: true
+          reclaimPolicy: Delete
     cephFileSystems:
       - name: ceph-filesystem
         storageClass:
