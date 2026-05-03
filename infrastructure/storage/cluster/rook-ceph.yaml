@@ -1,0 +1,123 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: rook-ceph-cluster
+  namespace: rook-ceph
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: rook-ceph-cluster
+      reconcileStrategy: ChartVersion
+      sourceRef:
+        kind: HelmRepository
+        name: rook-release
+        namespace: flux-system
+      version: "v1.17.7"
+  values:
+    toolbox:
+      enabled: true
+      resources:
+    cephClusterSpec:
+      cephVersion:
+        image: quay.io/ceph/ceph:v19.2.3
+        allowUnsupported: false
+      dataDirHostPath: /var/lib/rook
+      skipUpgradeChecks: false
+      continueUpgradeAfterChecksEvenIfNotHealthy: false
+      waitTimeoutForHealthyOSDInMinutes: 10
+      storage:
+        useAllNodes: true
+        useAllDevices: false
+        devices:
+        - name: "sdb"
+        config:
+          crushRoot: "default"
+          storeType: bluestore
+      placement:
+        all:
+          tolerations:
+          - key: storage-node
+            operator: Exists
+            effect: NoSchedule
+      resources:
+        mgr:
+        mon:
+        osd:
+        prepareosd:
+        mgr-sidecar:
+        crashcollector:
+        logcollector:
+        cleanup:
+        exporter:
+      priorityClassNames:
+        mon: system-node-critical
+        osd: system-node-critical
+        mgr: system-cluster-critical
+      network:
+        provider: host
+      crashCollector:
+        disable: false
+      logCollector:
+        enabled: true
+        periodicity: daily
+        maxLogSize: 500M
+      security:
+        kms:
+          connectionDetails: {}
+    ingress:
+      dashboard:
+        enabled: false
+    configOverride: |
+      [global]
+      mon_allow_pool_delete = true
+      bdev_enable_discard = true
+      bdev_async_discard = true
+      osd_pool_default_size = 3
+      osd_pool_default_min_size = 2
+    cleanupPolicy:
+      confirmation: ""
+      sanitizeDisks:
+        method: quick
+        dataSource: zero
+        iteration: 1
+      allowUninstallWithVolumeClaimsPresent: false
+    removeOSDsIfOutAndSafeToRemove: false
+    cephObjectStores:
+      - name: ceph-objectstore
+        spec:
+          gateway:
+            resources:
+        storageClass:
+          enabled: false
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: cloudflare-cluster-issuer
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+  name: rook-ceph
+  namespace: rook-ceph
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: rook-ceph.staging.stplabs.io
+    http:
+      paths:
+      - backend:
+          service:
+            name: rook-ceph-mgr-dashboard
+            port:
+              number: 8443
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - rook-ceph.staging.stplabs.io
+    secretName: rook-ceph-tls
