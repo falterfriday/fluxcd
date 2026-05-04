@@ -21,54 +21,51 @@ spec:
       resources:
     cephClusterSpec:
       cephVersion:
-        image: quay.io/ceph/ceph:v19.2.3
         allowUnsupported: false
-      dataDirHostPath: /var/lib/rook
-      skipUpgradeChecks: false
+        image: quay.io/ceph/ceph:v19.2.3
       continueUpgradeAfterChecksEvenIfNotHealthy: false
-      waitTimeoutForHealthyOSDInMinutes: 10
-      storage:
-        useAllNodes: true
-        useAllDevices: false
-        devices:
-        - name: "sdb"
-        config:
-          crushRoot: "default"
-          storeType: bluestore
+      crashCollector:
+        disable: false
+      dataDirHostPath: /var/lib/rook
+      logCollector:
+        enabled: true
+        maxLogSize: 500M
+        periodicity: daily
+      network:
+        provider: host
       placement:
         all:
           tolerations:
-          - key: storage-node
+          - effect: NoSchedule
+            key: storage-node
             operator: Exists
-            effect: NoSchedule
-      resources:
-        mgr:
-        mon:
-        osd:
-        prepareosd:
-        mgr-sidecar:
-        crashcollector:
-        logcollector:
-        cleanup:
-        exporter:
       priorityClassNames:
+        mgr: system-cluster-critical
         mon: system-node-critical
         osd: system-node-critical
-        mgr: system-cluster-critical
-      network:
-        provider: host
-      crashCollector:
-        disable: false
-      logCollector:
-        enabled: true
-        periodicity: daily
-        maxLogSize: 500M
+      resources:
+        cleanup: null
+        crashcollector: null
+        exporter: null
+        logcollector: null
+        mgr: null
+        mgr-sidecar: null
+        mon: null
+        osd: null
+        prepareosd: null
       security:
         kms:
           connectionDetails: {}
-    ingress:
-      dashboard:
-        enabled: false
+      skipUpgradeChecks: false
+      storage:
+        config:
+          crushRoot: default
+          storeType: bluestore
+        devices:
+        - name: sdb
+        useAllDevices: false
+        useAllNodes: true
+      waitTimeoutForHealthyOSDInMinutes: 10
     cephObjectStores:
     - name: ceph-objectstore
       spec:
@@ -76,6 +73,13 @@ spec:
           resources: null
       storageClass:
         enabled: false
+    cleanupPolicy:
+      allowUninstallWithVolumeClaimsPresent: false
+      confirmation: ""
+      sanitizeDisks:
+        dataSource: zero
+        iteration: 1
+        method: quick
     configOverride: |
       [global]
       mon_allow_pool_delete = true
@@ -83,13 +87,9 @@ spec:
       bdev_async_discard = true
       osd_pool_default_size = 3
       osd_pool_default_min_size = 2
-    cleanupPolicy:
-      confirmation: ""
-      sanitizeDisks:
-        method: quick
-        dataSource: zero
-        iteration: 1
-      allowUninstallWithVolumeClaimsPresent: false
+    ingress:
+      dashboard:
+        enabled: false
     removeOSDsIfOutAndSafeToRemove: false
 
 ---
