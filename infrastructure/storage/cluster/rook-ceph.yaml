@@ -69,6 +69,13 @@ spec:
     ingress:
       dashboard:
         enabled: false
+    cephObjectStores:
+    - name: ceph-objectstore
+      spec:
+        gateway:
+          resources: null
+      storageClass:
+        enabled: false
     configOverride: |
       [global]
       mon_allow_pool_delete = true
