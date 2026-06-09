@@ -14,15 +14,15 @@ spec:
         kind: HelmRepository
         name: rook-release
         namespace: flux-system
-      version: "v1.17.7"
+      version: "v1.20.*"
   values:
     toolbox:
       enabled: true
       resources:
+    cephVersion:
+      allowUnsupported: false
+      image: quay.io/ceph/ceph:v19.2.3
     cephClusterSpec:
-      cephVersion:
-        allowUnsupported: false
-        image: quay.io/ceph/ceph:v19.2.3
       continueUpgradeAfterChecksEvenIfNotHealthy: false
       crashCollector:
         disable: false
