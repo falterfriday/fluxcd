@@ -99,6 +99,9 @@ spec:
           failureDomain: host
           replicated:
             size: 3
+          erasureCoded:
+            dataChunks: 0
+            codingChunks: 0
         gateway:
           port: 80
           instances: 1
