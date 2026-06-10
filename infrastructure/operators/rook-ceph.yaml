@@ -25,3 +25,5 @@ spec:
       version: "v1.17.7"
   values:
     resources:
+    discover:
+      wipeDevicesFromOtherClusters: true
