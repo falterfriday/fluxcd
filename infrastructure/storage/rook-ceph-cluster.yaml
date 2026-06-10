@@ -23,6 +23,9 @@ spec:
       allowUnsupported: false
       image: quay.io/ceph/ceph:v19.2.3
     cephClusterSpec:
+      mon:
+        count: 3
+        allowMultiplePerNode: false
       continueUpgradeAfterChecksEvenIfNotHealthy: false
       crashCollector:
         disable: false
