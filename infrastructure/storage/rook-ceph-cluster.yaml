@@ -64,7 +64,7 @@ spec:
         devices:
         - name: sdb
         useAllDevices: false
-        useAllNodes: true
+        useAllNodes: false
       waitTimeoutForHealthyOSDInMinutes: 10
     cephBlockPools:
     - name: ceph-blockpool
