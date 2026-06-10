@@ -120,7 +120,7 @@ spec:
             replicated:
               size: 3
           gateway:
-            port: 80
+            port: 7480
             instances: 1
             resources:
         storageClass:
