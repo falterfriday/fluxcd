@@ -14,106 +14,60 @@ spec:
         kind: HelmRepository
         name: rook-release
         namespace: flux-system
-      version: "v1.20.*"
+      version: "v1.17.7"
   values:
     toolbox:
-      enabled: true
       resources:
-    cephVersion:
-      allowUnsupported: false
-      image: quay.io/ceph/ceph:v19.2.3
     cephClusterSpec:
-      mon:
-        count: 3
-        allowMultiplePerNode: false
-      continueUpgradeAfterChecksEvenIfNotHealthy: false
-      crashCollector:
-        disable: false
+      cephVersion:
+        image: quay.io/ceph/ceph:v19.2.3
+        allowUnsupported: false
       dataDirHostPath: /var/lib/rook
-      logCollector:
-        enabled: true
-        maxLogSize: 500M
-        periodicity: daily
-      network:
-        provider: host
+      skipUpgradeChecks: false
+      continueUpgradeAfterChecksEvenIfNotHealthy: false
+      waitTimeoutForHealthyOSDInMinutes: 10
+      storage:
+        useAllNodes: true
+        useAllDevices: false
+        devices:
+        - name: "sdb"
+        config:
+          crushRoot: "default"
+          storeType: bluestore
       placement:
-        all: {}
+        all:
+          tolerations:
+          - key: storage-node
+            operator: Exists
+            effect: NoSchedule
+      resources:
+        mgr:
+        mon:
+        osd:
+        prepareosd:
+        mgr-sidecar:
+        crashcollector:
+        logcollector:
+        cleanup:
+        exporter:
       priorityClassNames:
-        mgr: system-cluster-critical
         mon: system-node-critical
         osd: system-node-critical
-      resources:
-        cleanup: null
-        crashcollector: null
-        exporter: null
-        logcollector: null
-        mgr: null
-        mgr-sidecar: null
-        mon: null
-        osd: null
-        prepareosd: null
+        mgr: system-cluster-critical
+      network:
+        provider: host
+      crashCollector:
+        disable: false
+      logCollector:
+        enabled: true
+        periodicity: daily
+        maxLogSize: 500M
       security:
         kms:
           connectionDetails: {}
-      skipUpgradeChecks: false
-      storage:
-        config:
-          crushRoot: default
-          storeType: bluestore
-        devices:
-        - name: sdb
-        useAllDevices: false
-        useAllNodes: true
-      waitTimeoutForHealthyOSDInMinutes: 10
-    cephBlockPools:
-    - name: ceph-blockpool
-      spec:
-        failureDomain: host
-        replicated:
-          size: 3
-      storageClass:
-        enabled: true
-        name: ceph-block
-        isDefault: true
-        reclaimPolicy: Delete
-        allowVolumeExpansion: true
-        parameters:
-          imageFormat: "2"
-          imageFeatures: layering
-          csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
-          csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
-          csi.storage.k8s.io/controller-expand-secret-name: rook-csi-rbd-provisioner
-          csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
-          csi.storage.k8s.io/node-stage-secret-name: rook-csi-rbd-node
-          csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
-          csi.storage.k8s.io/fstype: ext4
-    cephObjectStores:
-    - name: ceph-objectstore
-      spec:
-        metadataPool:
-          failureDomain: host
-          replicated:
-            size: 3
-        dataPool:
-          failureDomain: host
-          replicated:
-            size: 3
-          erasureCoded:
-            dataChunks: 0
-            codingChunks: 0
-        gateway:
-          port: 80
-          instances: 1
-          resources: null
-      storageClass:
+    ingress:
+      dashboard:
         enabled: false
-    cleanupPolicy:
-      allowUninstallWithVolumeClaimsPresent: false
-      confirmation: ""
-      sanitizeDisks:
-        dataSource: zero
-        iteration: 1
-        method: quick
     configOverride: |
       [global]
       mon_allow_pool_delete = true
@@ -121,10 +75,21 @@ spec:
       bdev_async_discard = true
       osd_pool_default_size = 3
       osd_pool_default_min_size = 2
-    ingress:
-      dashboard:
-        enabled: false
+    cleanupPolicy:
+      confirmation: ""
+      sanitizeDisks:
+        method: quick
+        dataSource: zero
+        iteration: 1
+      allowUninstallWithVolumeClaimsPresent: false
     removeOSDsIfOutAndSafeToRemove: false
+    cephObjectStores:
+      - name: ceph-objectstore
+        spec:
+          gateway:
+            resources:
+        storageClass:
+          enabled: false
 
 ---
 apiVersion: networking.k8s.io/v1
