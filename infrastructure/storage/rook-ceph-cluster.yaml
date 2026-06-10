@@ -34,11 +34,7 @@ spec:
       network:
         provider: host
       placement:
-        all:
-          tolerations:
-          - effect: NoSchedule
-            key: storage-node
-            operator: Exists
+        all: {}
       priorityClassNames:
         mgr: system-cluster-critical
         mon: system-node-critical
@@ -64,7 +60,7 @@ spec:
         devices:
         - name: sdb
         useAllDevices: false
-        useAllNodes: false
+        useAllNodes: true
       waitTimeoutForHealthyOSDInMinutes: 10
     cephBlockPools:
     - name: ceph-blockpool
