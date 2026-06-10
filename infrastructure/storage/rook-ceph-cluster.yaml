@@ -87,6 +87,7 @@ spec:
       - name: ceph-objectstore
         spec:
           gateway:
+            port: 80
             resources:
         storageClass:
           enabled: false
