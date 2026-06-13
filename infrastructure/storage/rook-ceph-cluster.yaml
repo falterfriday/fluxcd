@@ -147,7 +147,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: rook-ceph.staging.stplabs.io
+  - host: rook-ceph.patch.stplabs.io
     http:
       paths:
       - backend:
@@ -159,5 +159,5 @@ spec:
         pathType: Prefix
   tls:
   - hosts:
-    - rook-ceph.staging.stplabs.io
+    - rook-ceph.patch.stplabs.io
     secretName: rook-ceph-tls

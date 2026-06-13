@@ -85,3 +85,14 @@ spec:
   path: ./infrastructure/storage
   prune: false
   wait: true
+  patches:
+    - target:
+        kind: Ingress
+        name: rook-ceph
+      patch: |
+        - op: replace
+          path: /spec/rules/0/host
+          value: rook-ceph.internal.stplabs.io
+        - op: replace
+          path: /spec/tls/0/hosts/0
+          value: rook-ceph.internal.stplabs.io
