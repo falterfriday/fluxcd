@@ -92,7 +92,7 @@ spec:
       patch: |
         - op: replace
           path: /spec/rules/0/host
-          value: rook-ceph.internal.stplabs.io
+          value: rook-ceph.stplabs.io
         - op: replace
           path: /spec/tls/0/hosts/0
-          value: rook-ceph.internal.stplabs.io
+          value: rook-ceph.stplabs.io
