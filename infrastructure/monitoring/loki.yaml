@@ -40,6 +40,10 @@ spec:
               period: 24h
     singleBinary:
       replicas: 1
+      resources:
+        requests:
+          cpu: null
+          memory: null
       persistence:
         enabled: true
         storageClass: ceph-block
