@@ -16,6 +16,9 @@ spec:
         namespace: flux-system
       version: "v1.17.7"
   values:
+    monitoring:
+      enabled: true
+      createPrometheusRules: true
     toolbox:
       resources:
     cephClusterSpec:

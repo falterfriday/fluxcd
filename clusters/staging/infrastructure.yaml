@@ -96,3 +96,33 @@ spec:
         - op: replace
           path: /spec/tls/0/hosts/0
           value: rook-ceph.staging.stplabs.io
+
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infra-monitoring
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: infra-storage
+  interval: 1h
+  retryInterval: 1m
+  timeout: 10m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./infrastructure/monitoring
+  prune: true
+  wait: true
+  patches:
+    - target:
+        kind: Ingress
+        name: grafana
+      patch: |
+        - op: replace
+          path: /spec/rules/0/host
+          value: grafana.staging.stplabs.io
+        - op: replace
+          path: /spec/tls/0/hosts/0
+          value: grafana.staging.stplabs.io
