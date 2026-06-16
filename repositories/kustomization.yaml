@@ -4,7 +4,9 @@ resources:
   - authelia.yaml
   - cert-manager.yaml
   - cnpg.yaml
+  - grafana.yaml
   - longhorn.yaml
   - metallb.yaml
+  - prometheus.yaml
   - rook-release.yaml
   - trueforge.yaml
