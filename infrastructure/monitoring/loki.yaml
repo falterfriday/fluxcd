@@ -47,7 +47,7 @@ spec:
       persistence:
         enabled: true
         storageClass: ceph-block
-        size: 50Gi
+        size: 10Gi
     read:
       replicas: 0
     write:
