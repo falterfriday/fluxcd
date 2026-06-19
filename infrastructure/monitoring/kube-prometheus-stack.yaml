@@ -39,7 +39,7 @@ spec:
       persistence:
         enabled: true
         storageClassName: ceph-block
-        size: 10Gi
+        size: 2Gi
       additionalDataSources:
         - name: Loki
           type: loki
