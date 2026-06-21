@@ -70,8 +70,7 @@ spec:
       service:
         targetPort: 2381
       serviceMonitor:
-        scheme: https
-        insecureSkipVerify: true
+        scheme: http
     alertmanager:
       alertmanagerSpec:
         storage:
