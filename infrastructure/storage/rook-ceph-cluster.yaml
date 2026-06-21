@@ -31,6 +31,8 @@ spec:
             enabled: true
           - name: telemetry
             enabled: true
+          - name: prometheus
+            enabled: true
       cephVersion:
         image: quay.io/ceph/ceph:v19.2.3
         allowUnsupported: false
