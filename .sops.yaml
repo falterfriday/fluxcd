@@ -1,0 +1,5 @@
+creation_rules:
+  - path_regex: clusters/staging/secrets/.*-secret\.yaml$
+    age: age1xr0zmjm2huqnqg7qmp6yzqdsf92aemxgvw8c8jy3zzuhty6jj94q98m0yl
+  - path_regex: clusters/production/secrets/.*-secret\.yaml$
+    age: age1ldjvn6pafm39l2t6vzk9tnm6lsqcdmxr5wsqnw4vd4cgp5e7hajsgf8hy5
