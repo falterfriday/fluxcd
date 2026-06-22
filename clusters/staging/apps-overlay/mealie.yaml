@@ -7,8 +7,11 @@ spec:
   values:
     persistence:
       data:
-        size: 5Gi
+        size: 1Gi
     cnpg:
       main:
-        storage:
-          size: 2Gi
+        cluster:
+          storage:
+            size: 1Gi
+          walStorage:
+            size: 1Gi
