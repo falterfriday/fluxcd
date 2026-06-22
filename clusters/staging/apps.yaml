@@ -15,4 +15,4 @@ spec:
     name: flux-system
   path: ./clusters/staging/apps-overlay
   prune: false
-  wait: true
+  wait: false
