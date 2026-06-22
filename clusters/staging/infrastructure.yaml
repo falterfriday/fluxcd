@@ -180,6 +180,7 @@ metadata:
 spec:
   dependsOn:
     - name: infra-monitoring
+    - name: apps
   interval: 1h
   retryInterval: 1m
   timeout: 5m
