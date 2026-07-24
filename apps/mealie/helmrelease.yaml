@@ -32,6 +32,10 @@ spec:
       name: mealie-backup-secret
       valuesKey: secretKey
       targetPath: credentials.rustfs.secretKey
+    - kind: Secret
+      name: mealie-backup-secret
+      valuesKey: encrKey
+      targetPath: credentials.rustfs.encrKey
   values:
     ingress:
       main:
