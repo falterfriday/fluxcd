@@ -48,7 +48,4 @@ spec:
         storageClass: ceph-block
     cnpg:
       main: {}
-    metrics:
-      main:
-        enabled: true
-        type: servicemonitor
+
