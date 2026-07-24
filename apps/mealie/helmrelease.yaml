@@ -24,6 +24,14 @@ spec:
       name: mealie-db-secret
       valuesKey: password
       targetPath: cnpg.main.password
+    - kind: Secret
+      name: mealie-backup-secret
+      valuesKey: accessKey
+      targetPath: credentials.rustfs.accessKey
+    - kind: Secret
+      name: mealie-backup-secret
+      valuesKey: secretKey
+      targetPath: credentials.rustfs.secretKey
   values:
     ingress:
       main:
@@ -46,6 +54,23 @@ spec:
       data:
         enabled: true
         storageClass: ceph-block
+    credentials:
+      rustfs:
+        type: s3
+        url: https://rustfs.internal.stplabs.io
+        bucket: cnpg-mealie
+        path: ""
+        region: us-east-1
     cnpg:
-      main: {}
+      main:
+        backups:
+          enabled: true
+          credentials: rustfs
+          retentionPolicy: "30d"
+          scheduledBackups:
+            - name: daily-backup
+              schedule: "0 0 0 * * *"
+              backupOwnerReference: self
+              immediate: true
+              suspend: false
 
