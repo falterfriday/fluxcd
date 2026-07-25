@@ -8,6 +8,9 @@ spec:
     persistence:
       data:
         size: 1Gi
+    credentials:
+      rustfs:
+        path: "staging"
     cnpg:
       main:
         cluster:
