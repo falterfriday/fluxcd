@@ -52,15 +52,6 @@ spec:
           nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
           nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
           nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
-        hosts:
-          - host: mealie.staging.stplabs.io
-            paths:
-              - path: /
-                pathType: Prefix
-        tls:
-          - hosts:
-              - mealie.staging.stplabs.io
-            secretName: mealie-tls
     persistence:
       data:
         enabled: true

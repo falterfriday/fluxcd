@@ -1,0 +1,50 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mealie
+  namespace: mealie
+spec:
+  chart:
+    spec:
+      version: "26.22.1"
+  values:
+    ingress:
+      main:
+        hosts:
+          - host: mealie.stplabs.io
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - mealie.stplabs.io
+            secretName: mealie-tls
+    credentials:
+      rustfs:
+        path: "prod"
+    persistence:
+      data:
+        size: 1Gi
+        retain: true
+        targetSelector:
+          main:
+            main:
+              mountPath: /app/data
+      nltk:
+        enabled: true
+        retain: true
+        size: 1Gi
+        type: emptyDir
+        targetSelector:
+          main:
+            main:
+              mountPath: /nltk_data
+    cnpg:
+      main:
+        cluster:
+          instances: 2
+          resources:
+            limits: {}
+            requests: {}
+          storage:
+            size: 100Gi
