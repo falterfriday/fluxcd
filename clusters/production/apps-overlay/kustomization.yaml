@@ -7,3 +7,7 @@ patches:
     target:
       kind: HelmRelease
       name: mealie
+  - path: home-assistant.yaml
+    target:
+      kind: HelmRelease
+      name: home-assistant
