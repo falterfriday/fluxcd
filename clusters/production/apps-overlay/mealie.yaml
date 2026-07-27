@@ -47,4 +47,6 @@ spec:
             limits: {}
             requests: {}
           storage:
-            size: 100Gi
+            size: 3Gi
+          walStorage:
+            size: 3Gi
