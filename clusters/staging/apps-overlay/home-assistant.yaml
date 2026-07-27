@@ -1,0 +1,33 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: home-assistant
+  namespace: home-assistant
+spec:
+  chart:
+    spec:
+      version: "28.4.5"
+  valuesFrom:
+    - kind: Secret
+      name: home-assistant-db-secret
+      valuesKey: password
+      targetPath: cnpg.main.password
+  values:
+    ingress:
+      main:
+        hosts:
+          - host: home-assistant.staging.stplabs.io
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - home-assistant.staging.stplabs.io
+            secretName: home-assistant-tls
+    cnpg:
+      main:
+        cluster:
+          storage:
+            size: 1Gi
+          walStorage:
+            size: 1Gi

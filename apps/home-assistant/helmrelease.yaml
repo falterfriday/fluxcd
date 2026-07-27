@@ -1,0 +1,56 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: home-assistant
+  namespace: home-assistant
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: home-assistant
+      sourceRef:
+        kind: HelmRepository
+        name: trueforge
+        namespace: flux-system
+      interval: 12h
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    homeassistant:
+      trusted_proxies:
+        - 10.0.0.0/8
+        - 192.168.1.0/24
+    image:
+      pullPolicy: Always
+    persistence:
+      config:
+        enabled: true
+        mountPath: /config
+        retain: true
+        size: 1Gi
+        targetSelectAll: true
+    service:
+      metrics:
+        enabled: false
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          cert-manager.io/cluster-issuer: cloudflare-cluster-issuer
+          nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+          nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+          nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+          nginx.ingress.kubernetes.io/proxy-real-ip-cidr: "0.0.0.0/0"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+          nginx.ingress.kubernetes.io/rate-limit: "100"
+          nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+          nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+          nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
+          nginx.ingress.kubernetes.io/websocket-services: home-assistant
+
