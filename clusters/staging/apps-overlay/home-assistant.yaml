@@ -12,6 +12,18 @@ spec:
       name: home-assistant-db-secret
       valuesKey: password
       targetPath: cnpg.main.password
+    - kind: Secret
+      name: home-assistant-backup-secret
+      valuesKey: accessKey
+      targetPath: credentials.rustfs.accessKey
+    - kind: Secret
+      name: home-assistant-backup-secret
+      valuesKey: secretKey
+      targetPath: credentials.rustfs.secretKey
+    - kind: Secret
+      name: home-assistant-backup-secret
+      valuesKey: encrKey
+      targetPath: credentials.rustfs.encrKey
   values:
     ingress:
       main:
@@ -24,6 +36,13 @@ spec:
           - hosts:
               - home-assistant.staging.stplabs.io
             secretName: home-assistant-tls
+    credentials:
+      rustfs:
+        type: s3
+        url: https://rustfs.internal.stplabs.io
+        bucket: cnpg-home-assistant
+        path: "staging"
+        region: us-east-1
     cnpg:
       main:
         cluster:
@@ -31,3 +50,13 @@ spec:
             size: 1Gi
           walStorage:
             size: 1Gi
+        backups:
+          enabled: true
+          credentials: rustfs
+          retentionPolicy: "30d"
+          scheduledBackups:
+            - name: daily-backup
+              schedule: "0 0 0 * * *"
+              backupOwnerReference: self
+              immediate: true
+              suspend: false
