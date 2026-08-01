@@ -47,9 +47,9 @@ spec:
       main:
         cluster:
           storage:
-            size: 1Gi
+            size: 5Gi
           walStorage:
-            size: 1Gi
+            size: 5Gi
         backups:
           enabled: true
           credentials: rustfs
