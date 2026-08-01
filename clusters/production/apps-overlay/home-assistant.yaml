@@ -45,6 +45,10 @@ spec:
         region: us-east-1
     cnpg:
       main:
+        storage:
+          size: 10Gi
+        walStorage:
+          size: 5Gi
         backups:
           enabled: true
           credentials: rustfs
