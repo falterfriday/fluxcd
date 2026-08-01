@@ -1,0 +1,128 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dex-theme
+  namespace: dex
+data:
+  styles.css: |
+    /* ============================================================
+       STP Labs — custom dark theme for Dex
+       ============================================================ */
+    :root {
+      --stp-bg:       #0d1117;
+      --stp-bg-2:     #10151f;
+      --stp-panel:    #161b26;
+      --stp-input:    #0d1117;
+      --stp-border:   #262d3a;
+      --stp-border-2: #333b4a;
+      --stp-fg:       #e6e9ef;
+      --stp-fg-muted: #9aa4b2;
+      --stp-accent:   #7c5cff;
+      --stp-cyan:     #4dd0e1;
+      --stp-danger:   #f85149;
+    }
+
+    html, body { height: 100%; }
+
+    .theme-body {
+      background: radial-gradient(1200px 600px at 50% -10%, #1b2233 0%, var(--stp-bg) 55%) fixed;
+      color: var(--stp-fg);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* --- Branded navbar: hide bundled logo, render a wordmark --- */
+    .theme-navbar {
+      background-color: rgba(13, 17, 23, 0.85);
+      border-bottom: 1px solid var(--stp-border);
+      height: 56px;
+      padding: 0 20px;
+    }
+    .theme-navbar__logo-wrap {
+      display: inline-flex;
+      align-items: center;
+      height: 100%;
+      padding: 0;
+      width: auto;
+    }
+    .theme-navbar__logo { display: none; }
+    .theme-navbar__logo-wrap::before {
+      content: "";
+      width: 22px; height: 22px; margin-right: 10px; border-radius: 6px;
+      background: linear-gradient(135deg, var(--stp-accent), var(--stp-cyan));
+      box-shadow: 0 0 14px rgba(124, 92, 255, 0.55);
+    }
+    .theme-navbar__logo-wrap::after {
+      content: "STP Labs \00b7 SSO";
+      color: var(--stp-fg);
+      font-size: 15px; font-weight: 600; letter-spacing: 0.02em;
+    }
+
+    /* --- Card / panel --- */
+    .dex-container { color: var(--stp-fg); }
+    .theme-panel {
+      background-color: var(--stp-panel);
+      border: 1px solid var(--stp-border);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+      padding: 34px 32px;
+    }
+    .theme-heading {
+      color: var(--stp-fg);
+      font-size: 21px; font-weight: 600;
+      margin: 0 0 20px;
+    }
+
+    /* --- Inputs --- */
+    .theme-form-label {
+      color: var(--stp-fg-muted);
+      font-size: 13px; font-weight: 500;
+      width: 260px; margin: 6px auto; text-align: left;
+    }
+    .theme-form-input {
+      background-color: var(--stp-input);
+      border: 1px solid var(--stp-border-2);
+      border-radius: 9px;
+      color: var(--stp-fg);
+      width: 260px; height: 42px;
+      padding: 8px 12px; font-size: 14px;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    .theme-form-input::placeholder { color: #5b6472; }
+    .theme-form-input:focus, .theme-form-input:active {
+      border-color: var(--stp-accent);
+      box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.20);
+      outline: none;
+    }
+
+    /* --- Buttons --- */
+    .dex-btn { border-radius: 9px; font-weight: 600; }
+    .theme-btn--primary, .theme-btn--success {
+      background: linear-gradient(135deg, var(--stp-accent), #6a4dff);
+      border: none; color: #fff;
+      width: 260px; padding: 10px 16px;
+      box-shadow: 0 6px 16px rgba(124, 92, 255, 0.35);
+      transition: filter .15s ease, transform .05s ease;
+    }
+    .theme-btn--primary:hover, .theme-btn--success:hover { filter: brightness(1.08); color: #fff; }
+    .theme-btn--primary:active, .theme-btn--success:active { transform: translateY(1px); }
+    .theme-btn-provider {
+      background-color: var(--stp-bg-2);
+      border: 1px solid var(--stp-border-2);
+      color: var(--stp-fg);
+      width: 260px; max-width: 100%;
+      transition: background-color .15s ease, border-color .15s ease;
+    }
+    .theme-btn-provider:hover { background-color: #1a2130; border-color: var(--stp-accent); color: #fff; }
+
+    /* --- Links & errors --- */
+    .theme-link-back, a { color: var(--stp-cyan); }
+    .theme-link-back:hover, a:hover { color: #7fe3f0; }
+    .dex-error-box {
+      background-color: rgba(248, 81, 73, 0.14);
+      border: 1px solid rgba(248, 81, 73, 0.45);
+      color: #ffb4ae;
+      border-radius: 9px;
+    }
+    .dex-subtle-text { color: var(--stp-fg-muted); }
