@@ -27,6 +27,11 @@ spec:
   values:
     ingress:
       main:
+        annotations:
+          nginx.ingress.kubernetes.io/ssl-passthrough: null
+          nginx.ingress.kubernetes.io/auth-url: "https://auth.staging.stplabs.io/oauth2/auth"
+          nginx.ingress.kubernetes.io/auth-signin: "https://auth.staging.stplabs.io/oauth2/start?rd=$escaped_request_uri"
+          nginx.ingress.kubernetes.io/auth-response-headers: "x-auth-request-user,x-auth-request-email"
         hosts:
           - host: home-assistant.staging.stplabs.io
             paths:
