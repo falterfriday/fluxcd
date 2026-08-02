@@ -8,6 +8,7 @@ resources:
   - grafana.yaml
   - longhorn.yaml
   - metallb.yaml
+  - oauth2-proxy.yaml
   - prometheus.yaml
   - rook-release.yaml
   - trueforge.yaml
