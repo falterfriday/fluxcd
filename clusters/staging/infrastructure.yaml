@@ -139,6 +139,24 @@ spec:
                   secretName: dex-tls
             config:
               issuer: https://dex.staging.stplabs.io
+    - target:
+        kind: HelmRelease
+        name: oauth2-proxy
+      patch: |
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: oauth2-proxy
+          namespace: dex
+        spec:
+          values:
+            ingress:
+              hosts:
+                - auth.staging.stplabs.io
+              tls:
+                - hosts:
+                    - auth.staging.stplabs.io
+                  secretName: oauth2-proxy-tls
 
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
