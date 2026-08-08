@@ -37,6 +37,8 @@ spec:
       valuesKey: encrKey
       targetPath: credentials.rustfs.encrKey
   values:
+    podOptions:
+      defaultAffinity: false
     ingress:
       main:
         enabled: true

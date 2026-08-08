@@ -20,6 +20,8 @@ spec:
     remediation:
       retries: 3
   values:
+    podOptions:
+      defaultAffinity: false
     homeassistant:
       trusted_proxies:
         - 10.0.0.0/8
