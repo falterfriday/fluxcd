@@ -90,6 +90,9 @@ spec:
       bdev_async_discard = true
       osd_pool_default_size = 3
       osd_pool_default_min_size = 2
+      [client.ceph-exporter]
+      debug_ceph_exporter = 0/5
+      log_to_file = false
     cleanupPolicy:
       confirmation: ""
       sanitizeDisks:
