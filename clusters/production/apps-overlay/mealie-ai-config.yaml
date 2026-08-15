@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mealie-ai-config
+  namespace: mealie
+spec:
+  template:
+    spec:
+      containers:
+        - name: reconcile
+          env:
+            - name: MANAGE_IMAGE_PROVIDER
+              value: "true"

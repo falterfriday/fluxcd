@@ -2,6 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ../../../apps
+  - ../../../apps/litellm
+  - ../../../apps/mealie-ai-config
 patches:
   - path: mealie.yaml
     target:
@@ -11,3 +13,7 @@ patches:
     target:
       kind: HelmRelease
       name: home-assistant
+  - path: mealie-ai-config.yaml
+    target:
+      kind: Job
+      name: mealie-ai-config
