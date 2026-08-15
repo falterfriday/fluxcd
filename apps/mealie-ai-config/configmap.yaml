@@ -67,28 +67,42 @@ data:
             provider_id = created["id"]
             print(f"created provider {PROVIDER['name']} ({provider_id})", flush=True)
 
-        if settings.get("defaultProviderId") != provider_id:
+        manage_image = os.environ.get("MANAGE_IMAGE_PROVIDER", "false").lower() == "true"
+        desired_image = provider_id if manage_image else settings.get("imageProviderId")
+
+        needs_update = (
+            settings.get("defaultProviderId") != provider_id
+            or settings.get("imageProviderId") != desired_image
+        )
+        if needs_update:
             call(
                 "PUT",
                 "/api/groups/ai-providers/settings",
                 {
                     "defaultProviderId": provider_id,
-                    # Preserve whatever these were; this job only owns the default.
                     "audioProviderId": settings.get("audioProviderId"),
-                    "imageProviderId": settings.get("imageProviderId"),
+                    "imageProviderId": desired_image,
                 },
             )
             print(f"set default provider -> {provider_id}", flush=True)
+            if manage_image:
+                print(f"set image provider   -> {provider_id}", flush=True)
         else:
-            print("default provider already correct", flush=True)
+            print("providers already correct", flush=True)
 
         final = call("GET", "/api/groups/ai-providers/settings")
         if not final.get("aiEnabled"):
             raise SystemExit("reconcile finished but aiEnabled is still false")
         if final.get("defaultProviderId") != provider_id:
             raise SystemExit("reconcile finished but default provider did not stick")
+        if manage_image and final.get("imageProviderId") != provider_id:
+            raise SystemExit("reconcile finished but image provider did not stick")
 
-        print(f"OK  aiEnabled={final['aiEnabled']}  model={PROVIDER['model']}", flush=True)
+        image_state = "claude" if manage_image else "preserved"
+        print(
+            f"OK  aiEnabled={final['aiEnabled']}  model={PROVIDER['model']}  image={image_state}",
+            flush=True,
+        )
 
 
     if __name__ == "__main__":
