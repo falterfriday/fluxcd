@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mealie-ai-config-script
+  namespace: mealie
+data:
+  reconcile.py: |
+    import json
+    import os
+    import time
+    import urllib.error
+    import urllib.request
+
+    BASE = os.environ["MEALIE_URL"].rstrip("/")
+    TOKEN = os.environ["MEALIE_API_TOKEN"]
+
+    PROVIDER = {
+        "name": os.environ["PROVIDER_NAME"],
+        "baseUrl": os.environ["PROVIDER_BASE_URL"],
+        "apiKey": os.environ["PROVIDER_API_KEY"],
+        "model": os.environ["PROVIDER_MODEL"],
+        "timeout": int(os.environ.get("PROVIDER_TIMEOUT", "120")),
+    }
+
+
+    def call(method, path, body=None, timeout=30):
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {TOKEN}",
+        }
+        data = json.dumps(body).encode() if body is not None else None
+        req = urllib.request.Request(f"{BASE}{path}", data=data, headers=headers, method=method)
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.load(resp)
+
+
+    def wait_for_mealie():
+        last = None
+        for attempt in range(30):
+            try:
+                return call("GET", "/api/groups/ai-providers/settings", timeout=15)
+            except urllib.error.HTTPError as exc:
+                if exc.code in (401, 403):
+                    raise SystemExit(
+                        f"MEALIE_API_TOKEN rejected ({exc.code}). Create a token under "
+                        "Mealie Settings -> API Tokens with an admin account."
+                    )
+                last = exc
+            except Exception as exc:  # noqa: BLE001 - retry transient startup errors
+                last = exc
+            print(f"  waiting for Mealie ({attempt + 1}/30): {type(last).__name__}", flush=True)
+            time.sleep(10)
+        raise SystemExit(f"could not reach Mealie at {BASE}: {last}")
+
+
+    def main():
+        settings = wait_for_mealie()
+        print(f"authenticated to {BASE}", flush=True)
+        existing = {p["name"]: p["id"] for p in settings.get("providers", [])}
+
+        if PROVIDER["name"] in existing:
+            provider_id = existing[PROVIDER["name"]]
+            call("PUT", f"/api/groups/ai-providers/providers/{provider_id}", PROVIDER)
+            print(f"updated provider {PROVIDER['name']} ({provider_id})", flush=True)
+        else:
+            created = call("POST", "/api/groups/ai-providers/providers", PROVIDER)
+            provider_id = created["id"]
+            print(f"created provider {PROVIDER['name']} ({provider_id})", flush=True)
+
+        if settings.get("defaultProviderId") != provider_id:
+            call(
+                "PUT",
+                "/api/groups/ai-providers/settings",
+                {
+                    "defaultProviderId": provider_id,
+                    # Preserve whatever these were; this job only owns the default.
+                    "audioProviderId": settings.get("audioProviderId"),
+                    "imageProviderId": settings.get("imageProviderId"),
+                },
+            )
+            print(f"set default provider -> {provider_id}", flush=True)
+        else:
+            print("default provider already correct", flush=True)
+
+        final = call("GET", "/api/groups/ai-providers/settings")
+        if not final.get("aiEnabled"):
+            raise SystemExit("reconcile finished but aiEnabled is still false")
+        if final.get("defaultProviderId") != provider_id:
+            raise SystemExit("reconcile finished but default provider did not stick")
+
+        print(f"OK  aiEnabled={final['aiEnabled']}  model={PROVIDER['model']}", flush=True)
+
+
+    if __name__ == "__main__":
+        main()

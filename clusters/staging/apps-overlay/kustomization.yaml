@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - ../../../apps
   - ../../../apps/litellm
+  - ../../../apps/mealie-ai-config
 patches:
   - path: mealie.yaml
     target:
