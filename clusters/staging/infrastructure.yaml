@@ -101,67 +101,6 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: infra-sso
-  namespace: flux-system
-spec:
-  dependsOn:
-    - name: infra-storage
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./infrastructure/sso
-  prune: false
-  wait: false
-  patches:
-    - target:
-        kind: HelmRelease
-        name: dex
-      patch: |
-        apiVersion: helm.toolkit.fluxcd.io/v2
-        kind: HelmRelease
-        metadata:
-          name: dex
-          namespace: dex
-        spec:
-          values:
-            ingress:
-              hosts:
-                - host: dex.staging.stplabs.io
-                  paths:
-                    - path: /
-                      pathType: Prefix
-              tls:
-                - hosts:
-                    - dex.staging.stplabs.io
-                  secretName: dex-tls
-            config:
-              issuer: https://dex.staging.stplabs.io
-    - target:
-        kind: HelmRelease
-        name: oauth2-proxy
-      patch: |
-        apiVersion: helm.toolkit.fluxcd.io/v2
-        kind: HelmRelease
-        metadata:
-          name: oauth2-proxy
-          namespace: dex
-        spec:
-          values:
-            ingress:
-              hosts:
-                - auth.staging.stplabs.io
-              tls:
-                - hosts:
-                    - auth.staging.stplabs.io
-                  secretName: oauth2-proxy-tls
-
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
   name: infra-monitoring
   namespace: flux-system
 spec:
