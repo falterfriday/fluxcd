@@ -99,6 +99,7 @@ spec:
       authentication_backend:
         file:
           enabled: true
+          watch: true
       identity_providers:
         oidc:
           enabled: true
