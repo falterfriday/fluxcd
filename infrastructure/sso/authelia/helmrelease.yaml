@@ -80,7 +80,7 @@ spec:
       session:
         cookies:
           - domain: staging.stplabs.io
-            subdomain: auth
+            subdomain: oidc
       storage:
         postgres:
           enabled: true
