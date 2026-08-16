@@ -125,3 +125,17 @@ spec:
                 - profile
                 - email
                 - groups
+            - client_id: grafana
+              client_name: Grafana (staging)
+              client_secret:
+                value: '$6$/vtu/5H8QFlYTw8g$87irORiTzuh6IMBINP5Sw.iFoTcasS2hGNY5pHesOLpxtI4E0KbP6svmHMMJdxbZZKtepMmI2Fn9060z6eYfy1'
+              public: false
+              consent_mode: implicit
+              authorization_policy: one_factor
+              redirect_uris:
+                - https://grafana.staging.stplabs.io/login/generic_oauth
+              scopes:
+                - openid
+                - profile
+                - email
+                - groups
