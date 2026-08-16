@@ -36,6 +36,11 @@ spec:
       name: mealie-backup-secret
       valuesKey: encrKey
       targetPath: credentials.rustfs.encrKey
+    - kind: Secret
+      name: mealie-oidc-secret
+      valuesKey: clientSecret
+      targetPath: mealie.api.oidc.client_secret
+      optional: true
   values:
     podOptions:
       defaultAffinity: false
