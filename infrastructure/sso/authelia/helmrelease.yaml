@@ -112,10 +112,9 @@ spec:
           clients:
             - client_id: mealie
               client_name: Mealie (staging)
-              public: true
-              require_pkce: true
-              pkce_challenge_method: S256
-              token_endpoint_auth_method: none
+              client_secret:
+                value: '$6$/2KT0iY.5KDzXaaM$0Hi.STYgeOpE6ngXclnfGAwbFdn8i1toVM1ziGcBQFtZTJq277PyQINL3od5xWBXBzPxZReQB0StGu2nKFHyL1'
+              public: false
               consent_mode: implicit
               authorization_policy: one_factor
               redirect_uris:
