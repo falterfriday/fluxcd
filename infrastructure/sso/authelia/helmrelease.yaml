@@ -1,0 +1,123 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: authelia
+  namespace: authelia
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: authelia
+      version: "0.11.6"
+      sourceRef:
+        kind: HelmRepository
+        name: authelia
+        namespace: flux-system
+      interval: 12h
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    secret:
+      existingSecret: authelia-secret
+    ingress:
+      enabled: true
+      className: nginx
+      annotations:
+        cert-manager.io/cluster-issuer: cloudflare-cluster-issuer
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      tls:
+        enabled: true
+        secret: authelia-tls
+    pod:
+      kind: Deployment
+      replicas: 1
+      resources:
+        requests:
+          cpu: 25m
+          memory: 128Mi
+        limits:
+          memory: 256Mi
+      env:
+        - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE
+          value: /secrets/db/password
+      extraVolumes:
+        - name: authelia-files
+          secret:
+            secretName: authelia-secret
+            items:
+              - key: oidc.jwk.RS256.pem
+                path: oidc.jwk.RS256.pem
+              - key: users_database.yml
+                path: users_database.yml
+        - name: db-password
+          secret:
+            secretName: authelia-db-app
+            items:
+              - key: password
+                path: password
+      extraVolumeMounts:
+        - name: authelia-files
+          mountPath: /secrets/oidc.jwk.RS256.pem
+          subPath: oidc.jwk.RS256.pem
+          readOnly: true
+        - name: authelia-files
+          mountPath: /config/users_database.yml
+          subPath: users_database.yml
+          readOnly: true
+        - name: db-password
+          mountPath: /secrets/db
+          readOnly: true
+
+    configMap:
+      theme: dark
+      access_control:
+        default_policy: one_factor
+      session:
+        cookies:
+          - domain: staging.stplabs.io
+            subdomain: auth
+      storage:
+        postgres:
+          enabled: true
+          address: tcp://authelia-db-rw:5432
+          database: authelia
+          username: authelia
+          password:
+            disabled: true
+          tls:
+            enabled: true
+            skip_verify: true
+            server_name: authelia-db-rw
+      notifier:
+        filesystem:
+          enabled: true
+      authentication_backend:
+        file:
+          enabled: true
+      identity_providers:
+        oidc:
+          enabled: true
+          jwks:
+            - key_id: default
+              algorithm: RS256
+              use: sig
+              key:
+                path: /secrets/oidc.jwk.RS256.pem
+          clients:
+            - client_id: mealie
+              client_name: Mealie (staging)
+              client_secret:
+                value: '$6$/2KT0iY.5KDzXaaM$0Hi.STYgeOpE6ngXclnfGAwbFdn8i1toVM1ziGcBQFtZTJq277PyQINL3od5xWBXBzPxZReQB0StGu2nKFHyL1'
+              public: false
+              redirect_uris:
+                - https://mealie.staging.stplabs.io/login
+              scopes:
+                - openid
+                - profile
+                - email
+                - groups
