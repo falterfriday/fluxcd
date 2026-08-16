@@ -5,6 +5,22 @@ metadata:
   namespace: mealie
 spec:
   values:
+    mealie:
+      api:
+        general:
+          # Mealie builds the OIDC redirect URI from base_url.
+          base_url: https://mealie.staging.stplabs.io
+        oidc:
+          auth_enabled: true
+          signup_enabled: true
+          configuration_url: https://oidc.staging.stplabs.io/.well-known/openid-configuration
+          client_id: mealie
+          # Members of the Authelia "admins" group become Mealie admins;
+          # any authenticated user may sign in (no user_group restriction).
+          admin_group: admins
+          provider_name: Authelia
+          remember_me: true
+          auto_redirect: false
     ingress:
       main:
         hosts:
