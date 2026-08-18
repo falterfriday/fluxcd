@@ -20,7 +20,7 @@ spec:
           admin_group: admins
           provider_name: Authelia
           remember_me: true
-          auto_redirect: false
+          auto_redirect: true
     ingress:
       main:
         hosts:

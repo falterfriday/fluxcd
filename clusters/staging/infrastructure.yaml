@@ -202,6 +202,7 @@ spec:
                   enabled: true
                   name: Authelia
                   allow_sign_up: true
+                  auto_login: true
                   client_id: grafana
                   scopes: openid profile email groups
                   auth_url: https://oidc.staging.stplabs.io/api/oidc/authorization
