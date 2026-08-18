@@ -5,9 +5,4 @@ resources:
   - namespace.yaml
   - cnpg-cluster.yaml
   - helmrelease.yaml
-configMapGenerator:
-  - name: authelia-assets
-    files:
-      - logo.png
-generatorOptions:
-  disableNameSuffixHash: true
+  - assets-configmap.yaml
