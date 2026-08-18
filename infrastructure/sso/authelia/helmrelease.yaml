@@ -108,6 +108,14 @@ spec:
       identity_providers:
         oidc:
           enabled: true
+          claims_policies:
+            grafana:
+              id_token:
+                - groups
+                - email
+                - email_verified
+                - preferred_username
+                - name
           jwks:
             - key_id: default
               algorithm: RS256
@@ -137,6 +145,7 @@ spec:
               public: false
               consent_mode: implicit
               authorization_policy: one_factor
+              claims_policy: grafana
               redirect_uris:
                 - https://grafana.staging.stplabs.io/login/generic_oauth
               scopes:
