@@ -60,6 +60,9 @@ spec:
             items:
               - key: password
                 path: password
+        - name: assets
+          configMap:
+            name: authelia-assets
       extraVolumeMounts:
         - name: authelia-files
           mountPath: /secrets/oidc.jwk.RS256.pem
@@ -72,9 +75,14 @@ spec:
         - name: db-password
           mountPath: /secrets/db
           readOnly: true
+        - name: assets
+          mountPath: /config/assets
+          readOnly: true
 
     configMap:
       theme: dark
+      server:
+        asset_path: /config/assets
       access_control:
         default_policy: one_factor
       session:
