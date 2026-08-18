@@ -135,7 +135,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: oidc.staging.stplabs.io
+    - host: oidc.patch.stplabs.io
       http:
         paths:
           - path: /
@@ -147,5 +147,5 @@ spec:
                   number: 80
   tls:
     - hosts:
-        - oidc.staging.stplabs.io
+        - oidc.patch.stplabs.io
       secretName: authelia-tls

@@ -8,6 +8,19 @@ spec:
     spec:
       version: "27.15.0"
   values:
+    mealie:
+      api:
+        general:
+          base_url: https://mealie.stplabs.io
+        oidc:
+          auth_enabled: true
+          signup_enabled: true
+          configuration_url: https://oidc.stplabs.io/.well-known/openid-configuration
+          client_id: mealie
+          admin_group: admins
+          provider_name: Authelia
+          remember_me: true
+          auto_redirect: true
     ingress:
       main:
         hosts:

@@ -82,10 +82,6 @@ spec:
           csp_template: "default-src 'self'; style-src 'self' 'nonce-${NONCE}' 'unsafe-inline' theme-park.dev raw.githubusercontent.com use.fontawesome.com; img-src 'self' theme-park.dev raw.githubusercontent.com data:; script-src 'self' 'unsafe-inline'; object-src 'none'; form-action 'self'; frame-ancestors 'self'; font-src use.fontawesome.com;"
       access_control:
         default_policy: one_factor
-      session:
-        cookies:
-          - domain: staging.stplabs.io
-            subdomain: oidc
       storage:
         postgres:
           enabled: true
@@ -122,34 +118,3 @@ spec:
               use: sig
               key:
                 path: /secrets/oidc.jwk.RS256.pem
-          clients:
-            - client_id: mealie
-              client_name: Mealie (staging)
-              client_secret:
-                value: '$6$/2KT0iY.5KDzXaaM$0Hi.STYgeOpE6ngXclnfGAwbFdn8i1toVM1ziGcBQFtZTJq277PyQINL3od5xWBXBzPxZReQB0StGu2nKFHyL1'
-              public: false
-              consent_mode: implicit
-              authorization_policy: one_factor
-              redirect_uris:
-                - https://mealie.staging.stplabs.io/login
-                - 'https://mealie.staging.stplabs.io/login?direct=1'
-              scopes:
-                - openid
-                - profile
-                - email
-                - groups
-            - client_id: grafana
-              client_name: Grafana (staging)
-              client_secret:
-                value: '$6$/vtu/5H8QFlYTw8g$87irORiTzuh6IMBINP5Sw.iFoTcasS2hGNY5pHesOLpxtI4E0KbP6svmHMMJdxbZZKtepMmI2Fn9060z6eYfy1'
-              public: false
-              consent_mode: implicit
-              authorization_policy: one_factor
-              claims_policy: grafana
-              redirect_uris:
-                - https://grafana.staging.stplabs.io/login/generic_oauth
-              scopes:
-                - openid
-                - profile
-                - email
-                - groups
