@@ -190,6 +190,8 @@ spec:
                           *Description:* {{ .Annotations.description }}
                           {{ end }}
             grafana:
+              deploymentStrategy:
+                type: Recreate
               envValueFrom:
                 GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET:
                   secretKeyRef:
