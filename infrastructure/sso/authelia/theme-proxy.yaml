@@ -23,6 +23,10 @@ data:
       server {
         listen 8080;
         server_name _;
+        location = /themeproxy/custom.css {
+          default_type text/css;
+          return 200 'a[href*="authelia.com"]{display:none !important;}';
+        }
 
         location / {
           proxy_pass http://authelia.authelia.svc.cluster.local:80;
@@ -42,7 +46,7 @@ data:
           # JSON endpoints (/api/oidc/*, /jwks.json, /.well-known/*) are untouched.
           sub_filter_types text/html;
           sub_filter_once on;
-          sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.dev/css/base/authelia/aquamarine.css"></head>';
+          sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.dev/css/base/authelia/aquamarine.css"><link rel="stylesheet" type="text/css" href="/themeproxy/custom.css"></head>';
         }
       }
     }
