@@ -219,7 +219,8 @@ spec:
                   api_url: https://oidc.staging.stplabs.io/api/oidc/userinfo
                   login_attribute_path: preferred_username
                   groups_attribute_path: groups
-                  role_attribute_path: "contains(groups, 'admins') && 'Admin' || 'Viewer'"
+                  role_attribute_path: "contains(groups, 'admins') && 'GrafanaAdmin' || 'Viewer'"
+                  allow_assign_grafana_admin: true
 
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
