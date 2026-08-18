@@ -24,15 +24,7 @@ spec:
     secret:
       existingSecret: authelia-secret
     ingress:
-      enabled: true
-      className: nginx
-      annotations:
-        cert-manager.io/cluster-issuer: cloudflare-cluster-issuer
-        nginx.ingress.kubernetes.io/ssl-redirect: "true"
-        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      tls:
-        enabled: true
-        secret: authelia-tls
+      enabled: false
     pod:
       kind: Deployment
       replicas: 1
@@ -83,6 +75,11 @@ spec:
       theme: dark
       server:
         asset_path: /config/assets
+        headers:
+          # Relaxed CSP so the browser may load the theme.park stylesheet
+          # (injected by theme-proxy) from theme-park.dev. ${NONCE} is
+          # substituted by Authelia per-request.
+          csp_template: "default-src 'self'; style-src 'self' 'nonce-${NONCE}' 'unsafe-inline' theme-park.dev raw.githubusercontent.com use.fontawesome.com; img-src 'self' theme-park.dev raw.githubusercontent.com data:; script-src 'self' 'unsafe-inline'; object-src 'none'; form-action 'self'; frame-ancestors 'self'; font-src use.fontawesome.com;"
       access_control:
         default_policy: one_factor
       session:

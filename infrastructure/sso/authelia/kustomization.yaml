@@ -6,3 +6,4 @@ resources:
   - cnpg-cluster.yaml
   - helmrelease.yaml
   - assets-configmap.yaml
+  - theme-proxy.yaml
