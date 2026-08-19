@@ -6,8 +6,8 @@ resources:
   - cnpg.yaml
   - grafana.yaml
   - longhorn.yaml
+  - bitnami.yaml
   - metallb.yaml
   - prometheus.yaml
-  - redis-operator.yaml
   - rook-release.yaml
   - trueforge.yaml
