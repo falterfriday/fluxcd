@@ -27,8 +27,6 @@ patches:
                           matchLabels:
                             app.kubernetes.io/name: authelia
                         topologyKey: kubernetes.io/hostname
-            # Full env/extraVolumes/extraVolumeMounts lists (JSON-merge replaces
-            # arrays), = base entries + the Redis password mount.
             env:
               - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE
                 value: /secrets/db/password
