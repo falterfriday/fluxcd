@@ -175,6 +175,18 @@ spec:
         - op: replace
           path: /spec/tls/0/hosts/0
           value: oidc.stplabs.io
+    - target:
+        kind: ConfigMap
+        name: authelia-theme
+      patch: |
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: authelia-theme
+          namespace: authelia
+        data:
+          theme.css: |
+            @import url("https://theme-park.dev/css/base/authelia/hotpink.css");
 
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
