@@ -6,7 +6,7 @@ metadata:
 spec:
   chart:
     spec:
-      version: "27.15.0"
+      version: "27.17.0"
   values:
     mealie:
       api:
