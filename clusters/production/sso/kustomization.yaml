@@ -100,8 +100,6 @@ patches:
               cookies:
                 - domain: stplabs.io
                   subdomain: oidc
-              # Shared session store so multiple Authelia replicas agree.
-              # VERIFY host against the operator's sentinel Service on deploy.
               redis:
                 enabled: true
                 host: authelia-redis.authelia.svc.cluster.local
@@ -114,8 +112,6 @@ patches:
                   password:
                     disabled: true
             authentication_backend:
-              # Swap the local file backend for lldap so the chart treats
-              # Authelia as non-stateful (required for replicas > 1).
               file:
                 enabled: false
               ldap:
@@ -129,10 +125,7 @@ patches:
                 password:
                   disabled: true
             notifier:
-              # Skip the SMTP startup probe: Gmail can reject the test recipient
-              # and crash-loop Authelia on boot. Real notifications still send.
               disable_startup_check: true
-              # Filesystem notifier is single-instance; SMTP works across replicas.
               filesystem:
                 enabled: false
               smtp:
