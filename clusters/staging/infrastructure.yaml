@@ -112,69 +112,9 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure/sso
+  path: ./clusters/staging/sso
   prune: false
   wait: false
-  patches:
-    - target:
-        kind: HelmRelease
-        name: authelia
-      patch: |
-        apiVersion: helm.toolkit.fluxcd.io/v2
-        kind: HelmRelease
-        metadata:
-          name: authelia
-          namespace: authelia
-        spec:
-          values:
-            configMap:
-              session:
-                cookies:
-                  - domain: staging.stplabs.io
-                    subdomain: oidc
-              identity_providers:
-                oidc:
-                  clients:
-                    - client_id: mealie
-                      client_name: Mealie (staging)
-                      client_secret:
-                        value: '$6$/2KT0iY.5KDzXaaM$0Hi.STYgeOpE6ngXclnfGAwbFdn8i1toVM1ziGcBQFtZTJq277PyQINL3od5xWBXBzPxZReQB0StGu2nKFHyL1'
-                      public: false
-                      consent_mode: implicit
-                      authorization_policy: one_factor
-                      redirect_uris:
-                        - https://mealie.staging.stplabs.io/login
-                        - 'https://mealie.staging.stplabs.io/login?direct=1'
-                      scopes:
-                        - openid
-                        - profile
-                        - email
-                        - groups
-                    - client_id: grafana
-                      client_name: Grafana (staging)
-                      client_secret:
-                        value: '$6$/vtu/5H8QFlYTw8g$87irORiTzuh6IMBINP5Sw.iFoTcasS2hGNY5pHesOLpxtI4E0KbP6svmHMMJdxbZZKtepMmI2Fn9060z6eYfy1'
-                      public: false
-                      consent_mode: implicit
-                      authorization_policy: one_factor
-                      claims_policy: grafana
-                      redirect_uris:
-                        - https://grafana.staging.stplabs.io/login/generic_oauth
-                      scopes:
-                        - openid
-                        - profile
-                        - email
-                        - groups
-    - target:
-        kind: Ingress
-        name: authelia-theme-proxy
-      patch: |
-        - op: replace
-          path: /spec/rules/0/host
-          value: oidc.staging.stplabs.io
-        - op: replace
-          path: /spec/tls/0/hosts/0
-          value: oidc.staging.stplabs.io
 
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
