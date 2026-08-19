@@ -22,6 +22,9 @@ spec:
     remediation:
       retries: 3
   values:
+    global:
+      security:
+        allowInsecureImages: true
     architecture: replication
     auth:
       enabled: true
@@ -31,8 +34,6 @@ spec:
       registry: docker.io
       repository: bitnamilegacy/redis
       tag: 7.4.3-debian-12-r0
-    # Sentinel mode: a single node StatefulSet (replicaCount pods), each running
-    # redis + sentinel; one is elected master. 3 nodes = HA quorum.
     replica:
       replicaCount: 3
       persistence:
