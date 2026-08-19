@@ -7,9 +7,12 @@ metadata:
   labels:
     app.kubernetes.io/name: lldap
 spec:
-  replicas: 1
+  replicas: 2
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: lldap
@@ -18,9 +21,18 @@ spec:
       labels:
         app.kubernetes.io/name: lldap
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: lldap
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: lldap
-          image: docker.io/lldap/lldap:stable
+          image: docker.io/lldap/lldap:v0.6.3-alpine
           ports:
             - name: ldap
               containerPort: 3890
@@ -83,6 +95,7 @@ spec:
       volumes:
         - name: data
           emptyDir: {}
+
 ---
 apiVersion: v1
 kind: Service
@@ -102,3 +115,15 @@ spec:
     - name: http
       port: 17170
       targetPort: 17170
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: lldap
+  namespace: authelia
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: lldap
