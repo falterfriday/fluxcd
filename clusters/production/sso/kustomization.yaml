@@ -34,6 +34,10 @@ patches:
                 value: /secrets/redis/password
               - name: AUTHELIA_SESSION_REDIS_HIGH_AVAILABILITY_SENTINEL_PASSWORD_FILE
                 value: /secrets/redis/password
+              - name: AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE
+                value: /secrets/lldap/password
+              - name: AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE
+                value: /secrets/smtp/password
             extraVolumes:
               - name: authelia-files
                 secret:
@@ -41,8 +45,6 @@ patches:
                   items:
                     - key: oidc.jwk.RS256.pem
                       path: oidc.jwk.RS256.pem
-                    - key: users_database.yml
-                      path: users_database.yml
               - name: db-password
                 secret:
                   secretName: authelia-db-app
@@ -58,14 +60,22 @@ patches:
                   items:
                     - key: password
                       path: password
+              - name: lldap-password
+                secret:
+                  secretName: lldap-secret
+                  items:
+                    - key: admin_password
+                      path: password
+              - name: smtp-password
+                secret:
+                  secretName: authelia-smtp-secret
+                  items:
+                    - key: password
+                      path: password
             extraVolumeMounts:
               - name: authelia-files
                 mountPath: /secrets/oidc.jwk.RS256.pem
                 subPath: oidc.jwk.RS256.pem
-                readOnly: true
-              - name: authelia-files
-                mountPath: /config/users_database.yml
-                subPath: users_database.yml
                 readOnly: true
               - name: db-password
                 mountPath: /secrets/db
@@ -75,6 +85,12 @@ patches:
                 readOnly: true
               - name: redis-password
                 mountPath: /secrets/redis
+                readOnly: true
+              - name: lldap-password
+                mountPath: /secrets/lldap
+                readOnly: true
+              - name: smtp-password
+                mountPath: /secrets/smtp
                 readOnly: true
           podDisruptionBudget:
             enabled: true
@@ -97,6 +113,35 @@ patches:
                   sentinel_name: mymaster
                   password:
                     disabled: true
+            authentication_backend:
+              # Swap the local file backend for lldap so the chart treats
+              # Authelia as non-stateful (required for replicas > 1).
+              file:
+                enabled: false
+              ldap:
+                enabled: true
+                implementation: lldap
+                address: ldap://lldap.authelia.svc.cluster.local:3890
+                base_dn: dc=stplabs,dc=io
+                additional_users_dn: ou=people
+                additional_groups_dn: ou=groups
+                user: uid=admin,ou=people,dc=stplabs,dc=io
+                password:
+                  disabled: true
+            notifier:
+              # Skip the SMTP startup probe: Gmail can reject the test recipient
+              # and crash-loop Authelia on boot. Real notifications still send.
+              disable_startup_check: true
+              # Filesystem notifier is single-instance; SMTP works across replicas.
+              filesystem:
+                enabled: false
+              smtp:
+                enabled: true
+                address: submission://smtp.gmail.com:587
+                sender: "Authelia <noreply@stplabs.io>"
+                username: patrick@stplabs.io
+                password:
+                  disabled: true
             identity_providers:
               oidc:
                 clients:
@@ -130,7 +175,7 @@ patches:
                       - profile
                       - email
                       - groups
-  # ---- CNPG database HA ----
+  # ---- CNPG database HA (authelia + lldap) ----
   - target:
       kind: Cluster
       name: authelia-db
@@ -138,6 +183,41 @@ patches:
       - op: replace
         path: /spec/instances
         value: 3
+  - target:
+      kind: Cluster
+      name: lldap-db
+    patch: |
+      - op: replace
+        path: /spec/instances
+        value: 3
+  # ---- lldap: prod web UI base URL + ingress host ----
+  - target:
+      kind: Deployment
+      name: lldap
+    patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: lldap
+        namespace: authelia
+      spec:
+        template:
+          spec:
+            containers:
+              - name: lldap
+                env:
+                  - name: LLDAP_HTTP_URL
+                    value: https://lldap.stplabs.io
+  - target:
+      kind: Ingress
+      name: lldap
+    patch: |
+      - op: replace
+        path: /spec/rules/0/host
+        value: lldap.stplabs.io
+      - op: replace
+        path: /spec/tls/0/hosts/0
+        value: lldap.stplabs.io
   # ---- theme-proxy HA (replicas + anti-affinity) ----
   - target:
       kind: Deployment
