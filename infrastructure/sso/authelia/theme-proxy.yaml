@@ -38,18 +38,13 @@ data:
           proxy_pass http://$authelia_upstream:80$request_uri;
           proxy_http_version 1.1;
           proxy_set_header Host $host;
-          # TLS is terminated at the ingress (force-ssl-redirect); tell Authelia
-          # it is behind HTTPS so it builds correct URLs / secure cookies.
           proxy_set_header X-Forwarded-Proto https;
           proxy_set_header X-Forwarded-Host $host;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Real-IP $remote_addr;
-          # Disable upstream compression so sub_filter can rewrite the body.
           proxy_set_header Accept-Encoding "";
           proxy_redirect off;
 
-          # Inject the Aquamarine stylesheet. Scoped to text/html only, so OIDC
-          # JSON endpoints (/api/oidc/*, /jwks.json, /.well-known/*) are untouched.
           sub_filter_types text/html;
           sub_filter_once on;
           sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="/themeproxy/theme.css"><link rel="stylesheet" type="text/css" href="/themeproxy/custom.css"></head>';
