@@ -8,5 +8,6 @@ resources:
   - longhorn.yaml
   - metallb.yaml
   - prometheus.yaml
+  - redis-operator.yaml
   - rook-release.yaml
   - trueforge.yaml
