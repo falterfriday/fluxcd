@@ -146,7 +146,7 @@ patches:
                       value: '$6$/2KT0iY.5KDzXaaM$0Hi.STYgeOpE6ngXclnfGAwbFdn8i1toVM1ziGcBQFtZTJq277PyQINL3od5xWBXBzPxZReQB0StGu2nKFHyL1'
                     public: false
                     consent_mode: implicit
-                    authorization_policy: one_factor
+                    authorization_policy: two_factor
                     redirect_uris:
                       - https://mealie.staging.stplabs.io/login
                       - 'https://mealie.staging.stplabs.io/login?direct=1'
@@ -161,7 +161,7 @@ patches:
                       value: '$6$/vtu/5H8QFlYTw8g$87irORiTzuh6IMBINP5Sw.iFoTcasS2hGNY5pHesOLpxtI4E0KbP6svmHMMJdxbZZKtepMmI2Fn9060z6eYfy1'
                     public: false
                     consent_mode: implicit
-                    authorization_policy: one_factor
+                    authorization_policy: two_factor
                     claims_policy: grafana
                     redirect_uris:
                       - https://grafana.staging.stplabs.io/login/generic_oauth
