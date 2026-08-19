@@ -1,0 +1,209 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../infrastructure/sso
+  - redis.yaml
+patches:
+  # ---- Authelia: LDAP backend + SMTP notifier + shared Redis + multi-replica ----
+  - target:
+      kind: HelmRelease
+      name: authelia
+    patch: |
+      apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      metadata:
+        name: authelia
+        namespace: authelia
+      spec:
+        values:
+          pod:
+            # Non-stateful config (LDAP + Redis + Postgres) lets the chart honor
+            # replicas > 1. Sessions are shared via Redis so replicas agree.
+            replicas: 2
+            selectors:
+              affinity:
+                podAntiAffinity:
+                  preferredDuringSchedulingIgnoredDuringExecution:
+                    - weight: 100
+                      podAffinityTerm:
+                        labelSelector:
+                          matchLabels:
+                            app.kubernetes.io/name: authelia
+                        topologyKey: kubernetes.io/hostname
+            env:
+              - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE
+                value: /secrets/db/password
+              - name: AUTHELIA_SESSION_REDIS_PASSWORD_FILE
+                value: /secrets/redis/password
+              - name: AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE
+                value: /secrets/lldap/password
+              - name: AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE
+                value: /secrets/smtp/password
+            extraVolumes:
+              - name: authelia-files
+                secret:
+                  secretName: authelia-secret
+                  items:
+                    - key: oidc.jwk.RS256.pem
+                      path: oidc.jwk.RS256.pem
+              - name: db-password
+                secret:
+                  secretName: authelia-db-app
+                  items:
+                    - key: password
+                      path: password
+              - name: assets
+                configMap:
+                  name: authelia-assets
+              - name: redis-password
+                secret:
+                  secretName: authelia-redis-secret
+                  items:
+                    - key: password
+                      path: password
+              - name: lldap-password
+                secret:
+                  secretName: lldap-secret
+                  items:
+                    - key: admin_password
+                      path: password
+              - name: smtp-password
+                secret:
+                  secretName: authelia-smtp-secret
+                  items:
+                    - key: password
+                      path: password
+            extraVolumeMounts:
+              - name: authelia-files
+                mountPath: /secrets/oidc.jwk.RS256.pem
+                subPath: oidc.jwk.RS256.pem
+                readOnly: true
+              - name: db-password
+                mountPath: /secrets/db
+                readOnly: true
+              - name: assets
+                mountPath: /config/assets
+                readOnly: true
+              - name: redis-password
+                mountPath: /secrets/redis
+                readOnly: true
+              - name: lldap-password
+                mountPath: /secrets/lldap
+                readOnly: true
+              - name: smtp-password
+                mountPath: /secrets/smtp
+                readOnly: true
+          podDisruptionBudget:
+            enabled: true
+            minAvailable: 1
+          configMap:
+            session:
+              cookies:
+                - domain: staging.stplabs.io
+                  subdomain: oidc
+              # Shared session store so both Authelia replicas agree.
+              redis:
+                enabled: true
+                host: authelia-redis-master.authelia.svc.cluster.local
+                port: 6379
+                password:
+                  disabled: true
+            authentication_backend:
+              # Swap the local file backend for lldap so the chart treats
+              # Authelia as non-stateful (required for replicas > 1).
+              file:
+                enabled: false
+              ldap:
+                enabled: true
+                implementation: lldap
+                address: ldap://lldap.authelia.svc.cluster.local:3890
+                base_dn: dc=stplabs,dc=io
+                additional_users_dn: ou=people
+                additional_groups_dn: ou=groups
+                user: uid=admin,ou=people,dc=stplabs,dc=io
+                password:
+                  disabled: true
+            notifier:
+              # Skip the SMTP startup probe: Gmail can reject the test recipient
+              # and crash-loop Authelia on boot. Real notifications still send.
+              disable_startup_check: true
+              # Filesystem notifier is single-instance; SMTP works across replicas.
+              filesystem:
+                enabled: false
+              smtp:
+                enabled: true
+                address: submission://smtp.gmail.com:587
+                sender: "Authelia <noreply@stplabs.io>"
+                username: patrick@stplabs.io
+                password:
+                  disabled: true
+            identity_providers:
+              oidc:
+                clients:
+                  - client_id: mealie
+                    client_name: Mealie (staging)
+                    client_secret:
+                      value: '$6$/2KT0iY.5KDzXaaM$0Hi.STYgeOpE6ngXclnfGAwbFdn8i1toVM1ziGcBQFtZTJq277PyQINL3od5xWBXBzPxZReQB0StGu2nKFHyL1'
+                    public: false
+                    consent_mode: implicit
+                    authorization_policy: one_factor
+                    redirect_uris:
+                      - https://mealie.staging.stplabs.io/login
+                      - 'https://mealie.staging.stplabs.io/login?direct=1'
+                    scopes:
+                      - openid
+                      - profile
+                      - email
+                      - groups
+                  - client_id: grafana
+                    client_name: Grafana (staging)
+                    client_secret:
+                      value: '$6$/vtu/5H8QFlYTw8g$87irORiTzuh6IMBINP5Sw.iFoTcasS2hGNY5pHesOLpxtI4E0KbP6svmHMMJdxbZZKtepMmI2Fn9060z6eYfy1'
+                    public: false
+                    consent_mode: implicit
+                    authorization_policy: one_factor
+                    claims_policy: grafana
+                    redirect_uris:
+                      - https://grafana.staging.stplabs.io/login/generic_oauth
+                    scopes:
+                      - openid
+                      - profile
+                      - email
+                      - groups
+  - target:
+      kind: Deployment
+      name: lldap
+    patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: lldap
+        namespace: authelia
+      spec:
+        template:
+          spec:
+            containers:
+              - name: lldap
+                env:
+                  - name: LLDAP_HTTP_URL
+                    value: https://lldap.staging.stplabs.io
+  - target:
+      kind: Ingress
+      name: lldap
+    patch: |
+      - op: replace
+        path: /spec/rules/0/host
+        value: lldap.staging.stplabs.io
+      - op: replace
+        path: /spec/tls/0/hosts/0
+        value: lldap.staging.stplabs.io
+  - target:
+      kind: Ingress
+      name: authelia-theme-proxy
+    patch: |
+      - op: replace
+        path: /spec/rules/0/host
+        value: oidc.staging.stplabs.io
+      - op: replace
+        path: /spec/tls/0/hosts/0
+        value: oidc.staging.stplabs.io

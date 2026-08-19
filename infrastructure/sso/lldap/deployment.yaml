@@ -1,0 +1,103 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lldap
+  namespace: authelia
+  labels:
+    app.kubernetes.io/name: lldap
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: lldap
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: lldap
+    spec:
+      containers:
+        - name: lldap
+          image: docker.io/lldap/lldap:stable
+          ports:
+            - name: ldap
+              containerPort: 3890
+            - name: http
+              containerPort: 17170
+          env:
+            - name: LLDAP_LDAP_BASE_DN
+              value: dc=stplabs,dc=io
+            - name: LLDAP_LDAP_USER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-secret
+                  key: admin_password
+            - name: LLDAP_LDAP_USER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-secret
+                  key: admin_email
+            - name: LLDAP_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-secret
+                  key: jwt_secret
+            - name: LLDAP_KEY_SEED
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-secret
+                  key: key_seed
+            - name: LLDAP_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-db-app
+                  key: uri
+            - name: LLDAP_HTTP_URL
+              value: https://lldap.patch.stplabs.io
+          readinessProbe:
+            tcpSocket:
+              port: 3890
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 3890
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lldap
+  namespace: authelia
+  labels:
+    app.kubernetes.io/name: lldap
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: lldap
+  ports:
+    - name: ldap
+      port: 3890
+      targetPort: 3890
+    - name: http
+      port: 17170
+      targetPort: 17170
