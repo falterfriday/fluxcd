@@ -1,0 +1,50 @@
+---
+apiVersion: redis.redis.opstreelabs.in/v1beta2
+kind: RedisReplication
+metadata:
+  name: authelia-redis
+  namespace: authelia
+spec:
+  clusterSize: 3
+  kubernetesConfig:
+    image: quay.io/opstree/redis:v7.0.15
+    imagePullPolicy: IfNotPresent
+    redisSecret:
+      name: authelia-redis-secret
+      key: password
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: ceph-block
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: redis.redis.opstreelabs.in/v1beta2
+kind: RedisSentinel
+metadata:
+  name: authelia-redis-sentinel
+  namespace: authelia
+spec:
+  clusterSize: 3
+  redisSentinelConfig:
+    redisReplicationName: authelia-redis
+    masterGroupName: myMaster
+  kubernetesConfig:
+    image: quay.io/opstree/redis-sentinel:v7.0.15
+    imagePullPolicy: IfNotPresent
+    redisSecret:
+      name: authelia-redis-secret
+      key: password
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: authelia-theme-proxy
+  namespace: authelia
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: authelia-theme-proxy
