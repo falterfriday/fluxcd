@@ -144,7 +144,7 @@ patches:
                       value: '$6$bD.ibPj2sW9L.t75$4vCBGxM9OJlF3EKVJU5g2dii0mFMMHsIYAo4ONbKdttgT8k9BgVfW55EXXEZhfG9kkMdWPNLSNfQNo44ycc5E.'
                     public: false
                     consent_mode: implicit
-                    authorization_policy: one_factor
+                    authorization_policy: two_factor
                     redirect_uris:
                       - https://mealie.stplabs.io/login
                       - 'https://mealie.stplabs.io/login?direct=1'
@@ -159,7 +159,7 @@ patches:
                       value: '$6$n8Q5OkiFBC7XLP7v$wNrGmu53t6pspBUzRKvqM4bnkwzkc/9TabtlqpHQ8kIdUmPCwQzgZJW4B5neI46nhfVGf0jz13oua13YWo3kP1'
                     public: false
                     consent_mode: implicit
-                    authorization_policy: one_factor
+                    authorization_policy: two_factor
                     claims_policy: grafana
                     redirect_uris:
                       - https://grafana.stplabs.io/login/generic_oauth
