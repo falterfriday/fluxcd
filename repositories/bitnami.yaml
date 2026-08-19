@@ -2,8 +2,9 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-  name: redis-operator
+  name: bitnami
   namespace: flux-system
 spec:
+  type: oci
   interval: 24h
-  url: https://ot-container-kit.github.io/helm-charts
+  url: oci://registry-1.docker.io/bitnamicharts

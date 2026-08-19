@@ -88,13 +88,13 @@ patches:
               # VERIFY host against the operator's sentinel Service on deploy.
               redis:
                 enabled: true
-                host: authelia-redis-sentinel-sentinel.authelia.svc.cluster.local
+                host: authelia-redis.authelia.svc.cluster.local
                 port: 26379
                 password:
                   disabled: true
                 high_availability:
                   enabled: true
-                  sentinel_name: myMaster
+                  sentinel_name: mymaster
                   password:
                     disabled: true
             identity_providers:

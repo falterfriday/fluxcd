@@ -1,42 +1,64 @@
 ---
-apiVersion: redis.redis.opstreelabs.in/v1beta2
-kind: RedisReplication
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
 metadata:
   name: authelia-redis
   namespace: authelia
 spec:
-  clusterSize: 3
-  kubernetesConfig:
-    image: quay.io/opstree/redis:v7.0.15
-    imagePullPolicy: IfNotPresent
-    redisSecret:
-      name: authelia-redis-secret
-      key: password
-  storage:
-    volumeClaimTemplate:
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        storageClassName: ceph-block
-        resources:
-          requests:
-            storage: 1Gi
----
-apiVersion: redis.redis.opstreelabs.in/v1beta2
-kind: RedisSentinel
-metadata:
-  name: authelia-redis-sentinel
-  namespace: authelia
-spec:
-  clusterSize: 3
-  redisSentinelConfig:
-    redisReplicationName: authelia-redis
-    masterGroupName: myMaster
-  kubernetesConfig:
-    image: quay.io/opstree/redis-sentinel:v7.0.15
-    imagePullPolicy: IfNotPresent
-    redisSecret:
-      name: authelia-redis-secret
-      key: password
+  interval: 30m
+  chart:
+    spec:
+      chart: redis
+      version: "20.13.4"
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: flux-system
+      interval: 12h
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    architecture: replication
+    auth:
+      enabled: true
+      existingSecret: authelia-redis-secret
+      existingSecretPasswordKey: password
+    image:
+      registry: docker.io
+      repository: bitnamilegacy/redis
+      tag: 7.4.3-debian-12-r0
+    # Sentinel mode: a single node StatefulSet (replicaCount pods), each running
+    # redis + sentinel; one is elected master. 3 nodes = HA quorum.
+    replica:
+      replicaCount: 3
+      persistence:
+        enabled: true
+        storageClass: ceph-block
+        size: 1Gi
+      resources:
+        requests:
+          cpu: 25m
+          memory: 64Mi
+        limits:
+          memory: 256Mi
+      podAntiAffinityPreset: soft
+    sentinel:
+      enabled: true
+      masterSet: mymaster
+      image:
+        registry: docker.io
+        repository: bitnamilegacy/redis-sentinel
+        tag: 7.4.3-debian-12-r0
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 128Mi
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget
