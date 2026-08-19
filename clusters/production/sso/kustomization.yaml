@@ -34,6 +34,8 @@ patches:
                 value: /secrets/db/password
               - name: AUTHELIA_SESSION_REDIS_PASSWORD_FILE
                 value: /secrets/redis/password
+              - name: AUTHELIA_SESSION_REDIS_HIGH_AVAILABILITY_SENTINEL_PASSWORD_FILE
+                value: /secrets/redis/password
             extraVolumes:
               - name: authelia-files
                 secret:
