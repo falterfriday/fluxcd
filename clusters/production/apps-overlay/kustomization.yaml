@@ -4,6 +4,7 @@ resources:
   - ../../../apps
   - ../../../apps/litellm
   - ../../../apps/mealie-ai-config
+  - ../../../apps/mealie-gkeep-sync
 patches:
   - path: mealie.yaml
     target:
@@ -17,3 +18,7 @@ patches:
     target:
       kind: Job
       name: mealie-ai-config
+  - path: mealie-gkeep-sync.yaml
+    target:
+      kind: HelmRelease
+      name: mealie-gkeep-sync

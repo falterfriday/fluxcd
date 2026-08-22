@@ -14,3 +14,7 @@ patches:
     target:
       kind: HelmRelease
       name: home-assistant
+  - path: mealie-gkeep-sync.yaml
+    target:
+      kind: HelmRelease
+      name: mealie-gkeep-sync
