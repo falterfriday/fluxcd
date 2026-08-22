@@ -60,4 +60,3 @@ spec:
               backupOwnerReference: self
               immediate: true
               suspend: false
-
