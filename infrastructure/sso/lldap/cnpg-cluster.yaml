@@ -16,6 +16,25 @@ spec:
     initdb:
       database: lldap
       owner: lldap
+  backup:
+    retentionPolicy: "30d"
+    target: prefer-standby
+    barmanObjectStore:
+      destinationPath: s3://cnpg-lldap/patch/lldap/cnpg
+      endpointURL: https://rustfs.internal.stplabs.io
+      serverName: lldap-db
+      s3Credentials:
+        accessKeyId:
+          name: lldap-db-backup-s3-creds
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: lldap-db-backup-s3-creds
+          key: ACCESS_SECRET_KEY
+      data:
+        compression: bzip2
+        jobs: 2
+      wal:
+        compression: bzip2
   monitoring:
     enablePodMonitor: true
   resources:

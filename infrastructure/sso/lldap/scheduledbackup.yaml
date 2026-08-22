@@ -1,0 +1,14 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: lldap-db-daily
+  namespace: authelia
+spec:
+  cluster:
+    name: lldap-db
+  method: barmanObjectStore
+  backupOwnerReference: self
+  schedule: "0 45 0 * * *"
+  immediate: true
+  suspend: false

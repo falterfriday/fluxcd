@@ -17,8 +17,6 @@ patches:
       spec:
         values:
           pod:
-            # Non-stateful config (LDAP + Redis + Postgres) lets the chart honor
-            # replicas > 1. Sessions are shared via Redis so replicas agree.
             replicas: 2
             selectors:
               affinity:
@@ -101,7 +99,6 @@ patches:
               cookies:
                 - domain: staging.stplabs.io
                   subdomain: oidc
-              # Shared session store so both Authelia replicas agree.
               redis:
                 enabled: true
                 host: authelia-redis-master.authelia.svc.cluster.local
@@ -109,8 +106,6 @@ patches:
                 password:
                   disabled: true
             authentication_backend:
-              # Swap the local file backend for lldap so the chart treats
-              # Authelia as non-stateful (required for replicas > 1).
               file:
                 enabled: false
               ldap:
@@ -124,10 +119,7 @@ patches:
                 password:
                   disabled: true
             notifier:
-              # Skip the SMTP startup probe: Gmail can reject the test recipient
-              # and crash-loop Authelia on boot. Real notifications still send.
               disable_startup_check: true
-              # Filesystem notifier is single-instance; SMTP works across replicas.
               filesystem:
                 enabled: false
               smtp:
@@ -207,3 +199,17 @@ patches:
       - op: replace
         path: /spec/tls/0/hosts/0
         value: oidc.staging.stplabs.io
+  - target:
+      kind: Cluster
+      name: authelia-db
+    patch: |
+      - op: replace
+        path: /spec/backup/barmanObjectStore/destinationPath
+        value: s3://cnpg-authelia/staging/authelia/cnpg
+  - target:
+      kind: Cluster
+      name: lldap-db
+    patch: |
+      - op: replace
+        path: /spec/backup/barmanObjectStore/destinationPath
+        value: s3://cnpg-lldap/staging/lldap/cnpg

@@ -257,3 +257,17 @@ patches:
       data:
         theme.css: |
           @import url("https://theme-park.dev/css/base/authelia/hotpink.css");
+  - target:
+      kind: Cluster
+      name: authelia-db
+    patch: |
+      - op: replace
+        path: /spec/backup/barmanObjectStore/destinationPath
+        value: s3://cnpg-authelia/production/authelia/cnpg
+  - target:
+      kind: Cluster
+      name: lldap-db
+    patch: |
+      - op: replace
+        path: /spec/backup/barmanObjectStore/destinationPath
+        value: s3://cnpg-lldap/production/lldap/cnpg

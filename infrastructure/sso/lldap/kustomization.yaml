@@ -3,5 +3,6 @@ kind: Kustomization
 namespace: authelia
 resources:
   - cnpg-cluster.yaml
+  - scheduledbackup.yaml
   - deployment.yaml
   - ingress.yaml
