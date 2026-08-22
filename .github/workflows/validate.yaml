@@ -74,8 +74,20 @@ jobs:
           tar -xzf "$archive" actionlint
           sudo install -m 0755 actionlint /usr/local/bin/actionlint
 
+      - name: Verify shellcheck is available
+        run: |
+          set -euo pipefail
+          command -v shellcheck >/dev/null || {
+            echo "::error::shellcheck is not installed; actionlint would skip shell analysis"
+            exit 1
+          }
+          shellcheck --version
+
       - name: Lint workflows
         run: actionlint -color
+
+      - name: Lint shell scripts
+        run: shellcheck -S style .github/scripts/*.sh
 
   manifests:
     name: build and schema-validate

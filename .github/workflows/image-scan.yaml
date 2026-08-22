@@ -69,11 +69,12 @@ jobs:
 
       - name: Image inventory
         run: |
+          set -euo pipefail
           {
             echo "## Images scanned"
             echo
             python3 .github/scripts/list-images.py "${RUNNER_TEMP}/rendered" \
-              | sed 's/^/- `/; s/$/`/'
+              | while IFS= read -r image; do printf -- "- \`%s\`\n" "$image"; done
             echo
           } >> "${GITHUB_STEP_SUMMARY}"
 
