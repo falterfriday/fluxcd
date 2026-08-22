@@ -55,4 +55,3 @@ spec:
           nginx.ingress.kubernetes.io/ssl-passthrough: "true"
           nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
           nginx.ingress.kubernetes.io/websocket-services: home-assistant
-
