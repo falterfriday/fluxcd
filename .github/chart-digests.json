@@ -1,0 +1,13 @@
+{
+  "_comment": "Content digests for exactly-pinned Helm charts. Regenerate with `.github/scripts/chart-digests.py <rendered-dir> --update` after an intentional chart bump. A mismatch in CI means a version already deployed here was republished upstream with different content.",
+  "charts": {
+    "authelia/authelia:0.11.6": "sha256:16ab42ee63a8539c4294250faebb92e719cc5022382b79a5c83aeac65a8f4fc5",
+    "bitnami/redis:20.13.4": "sha256:6a389e13237e8e639ec0d445e785aa246b57bfce711b087033a196a291d5c8d7",
+    "mealie-gkeep-sync/mealie-gkeep-sync:1.0.0": "sha256:90be3771309a617fb5fe35934b00e8c598692c59a3c0461a8663615bf4478797",
+    "metallb/metallb:0.15.3": "sha256:27db761c5ad2525fd130c92fe2f2d4500f8870e402fefe3c9cb8d34d8a71a70c",
+    "rook-release/rook-ceph-cluster:v1.17.7": "sha256:d2755156a66e029a8be87524fff7278a964d9c54b3f5851fc0cab224e03cbca3",
+    "rook-release/rook-ceph:v1.17.7": "sha256:beaaf0b6a1a5b9c58ea1291751abff29c952793aa262d8693cfc49315c84d293",
+    "trueforge/home-assistant:28.4.5": "sha256:60287dda1ce3d357eec692bf7f98a09fefedc29d57d19d7804b27aaf4f4a641b",
+    "trueforge/mealie:27.17.0": "sha256:91f38d94a85dd05aa96c3a2bd7f77e3addbed5274be2fc8c96abbd4a7d79de26"
+  }
+}

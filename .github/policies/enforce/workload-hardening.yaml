@@ -1,0 +1,101 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: workload-hardening
+  annotations:
+    policies.kyverno.io/title: Workload hardening baseline
+    policies.kyverno.io/severity: medium
+spec:
+  background: false
+  rules:
+    - name: require-resource-requests-and-limits
+      match:
+        any:
+          - resources:
+              kinds: [Deployment, StatefulSet, DaemonSet, Job]
+      validate:
+        failureAction: Enforce
+        message: >-
+          Every container must declare resources.requests and resources.limits.
+          Unbounded pods are how a single workload evicts the rest of the node.
+        pattern:
+          spec:
+            template:
+              spec:
+                containers:
+                  - resources:
+                      requests:
+                        memory: "?*"
+                        cpu: "?*"
+                      limits:
+                        memory: "?*"
+
+    - name: disallow-privilege-escalation
+      match:
+        any:
+          - resources:
+              kinds: [Deployment, StatefulSet, DaemonSet, Job]
+      validate:
+        failureAction: Enforce
+        message: >-
+          Containers must set securityContext.allowPrivilegeEscalation: false.
+        pattern:
+          spec:
+            template:
+              spec:
+                containers:
+                  - securityContext:
+                      allowPrivilegeEscalation: false
+
+    - name: require-drop-all-capabilities
+      match:
+        any:
+          - resources:
+              kinds: [Deployment, StatefulSet, DaemonSet, Job]
+      validate:
+        failureAction: Enforce
+        message: >-
+          Containers must drop ALL Linux capabilities and add back only what
+          they need.
+        pattern:
+          spec:
+            template:
+              spec:
+                containers:
+                  - securityContext:
+                      capabilities:
+                        drop: ["ALL"]
+
+    - name: disallow-latest-tag
+      match:
+        any:
+          - resources:
+              kinds: [Deployment, StatefulSet, DaemonSet, Job]
+      validate:
+        failureAction: Enforce
+        message: >-
+          Container images must not use the ':latest' tag — it makes the
+          deployed version unknowable and rollback impossible to reason about.
+        pattern:
+          spec:
+            template:
+              spec:
+                containers:
+                  - image: "!*:latest"
+
+    - name: require-explicit-image-tag
+      match:
+        any:
+          - resources:
+              kinds: [Deployment, StatefulSet, DaemonSet, Job]
+      validate:
+        failureAction: Enforce
+        message: >-
+          Container images must carry an explicit tag or digest.
+        pattern:
+          spec:
+            template:
+              spec:
+                containers:
+                  - image: "*:*"

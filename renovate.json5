@@ -1,0 +1,107 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+
+  extends: [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommitsDisabled", // repo history uses plain imperative messages
+  ],
+
+  // Ranges are the single largest source of unreviewable drift in this repo:
+  // 'cert-manager: 1.x' means the cluster can change without a commit. Pinning
+  // converts every upgrade into a reviewable diff, which is the whole point of
+  // keeping cluster state in git.
+  rangeStrategy: "pin",
+
+  labels: ["dependencies"],
+  prConcurrentLimit: 5,
+  prHourlyLimit: 2,
+
+  // Encrypted files hold no dependency information and must never be rewritten.
+  ignorePaths: [
+    "clusters/*/secrets/**",
+  ],
+
+  flux: {
+    managerFilePatterns: [
+      "/^apps/.+\\.ya?ml$/",
+      "/^infrastructure/.+\\.ya?ml$/",
+      "/^clusters/.+\\.ya?ml$/",
+      "/^repositories/.+\\.ya?ml$/",
+    ],
+  },
+
+  kubernetes: {
+    managerFilePatterns: [
+      "/^apps/.+\\.ya?ml$/",
+      "/^infrastructure/.+\\.ya?ml$/",
+      "/^clusters/.+\\.ya?ml$/",
+    ],
+  },
+
+  "github-actions": {
+    managerFilePatterns: [
+      "/^\\.github/workflows/.+\\.ya?ml$/",
+    ],
+    // Workflows pin actions by SHA with a version comment; keep that shape.
+    pinDigests: true,
+  },
+
+  packageRules: [
+    {
+      description: "Production overlays change what is running in production — always review by hand.",
+      matchFileNames: ["clusters/production/**"],
+      addLabels: ["env:production"],
+      automerge: false,
+      minimumReleaseAge: "3 days",
+    },
+    {
+      description: "Staging overlays are the intended first landing point for a change.",
+      matchFileNames: ["clusters/staging/**"],
+      addLabels: ["env:staging"],
+      automerge: false,
+    },
+    {
+      description: "The monitoring stack moves as a unit; splitting it produces incompatible pairs.",
+      matchPackageNames: ["kube-prometheus-stack", "prometheus-operator-crds", "loki", "promtail"],
+      groupName: "monitoring stack",
+    },
+    {
+      description: "rook-ceph and rook-ceph-cluster must stay on the same version.",
+      matchPackageNames: ["rook-ceph", "rook-ceph-cluster"],
+      groupName: "rook-ceph",
+    },
+    {
+      description: "Storage and database operators carry real data-loss risk; never group or rush them.",
+      matchPackageNames: ["cloudnative-pg", "rook-ceph", "rook-ceph-cluster", "longhorn"],
+      minimumReleaseAge: "7 days",
+      addLabels: ["review:careful"],
+    },
+    {
+      description: "Major upgrades get their own PR and their own reading of the upstream changelog.",
+      matchUpdateTypes: ["major"],
+      addLabels: ["upgrade:major"],
+      minimumReleaseAge: "7 days",
+    },
+    {
+      description: "GitHub Actions: group routine bumps, they are low risk and high noise.",
+      matchManagers: ["github-actions"],
+      groupName: "github actions",
+    },
+    {
+      // bitnamilegacy/* is the frozen archive Bitnami left behind when it moved
+      // its catalogue behind a subscription in 2025. Those images receive no
+      // security updates, so Renovate has nothing to offer here — replacing
+      // them is manual work, tracked separately rather than by this bot.
+      description: "Frozen bitnamilegacy images: no upstream updates exist to track.",
+      matchPackageNames: ["docker.io/bitnamilegacy/**"],
+      enabled: false,
+    },
+  ],
+
+  // A chart bump changes .github/chart-digests.json. CI reports the staleness
+  // as a warning rather than a failure, so Renovate PRs stay green; regenerate
+  // the lockfile when convenient with:
+  //   .github/scripts/render-all.sh /tmp/rendered
+  //   .github/scripts/chart-digests.py /tmp/rendered --update
+}

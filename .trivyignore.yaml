@@ -1,0 +1,12 @@
+# Documented suppressions for Trivy misconfiguration scanning.
+# Everything else is reported to GitHub Code Scanning and triaged there.
+misconfigurations:
+  - id: KSV-0109
+    statement: >-
+      False positive. The 'TOKEN' hit is the line
+      `TOKEN = os.environ["MEALIE_API_TOKEN"]` inside the Python reconcile
+      script stored in the mealie-ai-config ConfigMap. It reads the token from
+      the environment (sourced from the SOPS-encrypted mealie-ai-config-secret);
+      no secret value is stored in the ConfigMap itself.
+    paths:
+      - "*apps.yaml"

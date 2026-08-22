@@ -1,0 +1,88 @@
+---
+name: image-scan
+
+on:
+  schedule:
+    # Tuesday 06:00 UTC, a day after the security workflow's weekly run.
+    - cron: '0 6 * * 2'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/scripts/list-images.py'
+      - '.github/scripts/scan-images.sh'
+      - '.github/workflows/image-scan.yaml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: image-scan-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TRIVY_URL: https://github.com/aquasecurity/trivy/releases/download/v0.74.0/trivy_0.74.0_Linux-64bit.tar.gz
+  TRIVY_SHA256: 2ae6fe3ee734b7fdf11335663e18c75ea12dccc76062f09f164a3b0f8be4371a
+  KUSTOMIZE_URL: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.8.1/kustomize_v5.8.1_linux_amd64.tar.gz
+  KUSTOMIZE_SHA256: 029a7f0f4e1932c52a0476cf02a0fd855c0bb85694b82c338fc648dcb53a819d
+  FLUX_VERSION: 2.9.4
+
+jobs:
+  scan:
+    name: scan pinned images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install --disable-pip-version-check pyyaml
+
+      - name: Install Flux CLI
+        uses: fluxcd/flux2/action@889be9d6cc8afa8ed639e1e1ba4ab678e3b38d8c  # v2.9.4
+        with:
+          version: ${{ env.FLUX_VERSION }}
+
+      - uses: ./.github/actions/install-binary
+        with:
+          name: kustomize
+          url: ${{ env.KUSTOMIZE_URL }}
+          sha256: ${{ env.KUSTOMIZE_SHA256 }}
+
+      - uses: ./.github/actions/install-binary
+        with:
+          name: trivy
+          url: ${{ env.TRIVY_URL }}
+          sha256: ${{ env.TRIVY_SHA256 }}
+
+      - name: Render manifests
+        run: .github/scripts/render-all.sh "${RUNNER_TEMP}/rendered"
+
+      - name: Image inventory
+        run: |
+          {
+            echo "## Images scanned"
+            echo
+            python3 .github/scripts/list-images.py "${RUNNER_TEMP}/rendered" \
+              | sed 's/^/- `/; s/$/`/'
+            echo
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Scan images
+        run: .github/scripts/scan-images.sh "${RUNNER_TEMP}/rendered" "${RUNNER_TEMP}/imgscan"
+
+      - name: Upload SARIF
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@89a39a4e59826350b863aa6b6252a07ad50cf83e  # v4.32.4
+        with:
+          sarif_file: ${{ runner.temp }}/imgscan
+          category: trivy-image

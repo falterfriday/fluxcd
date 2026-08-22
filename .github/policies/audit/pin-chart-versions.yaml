@@ -1,0 +1,48 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: pin-helmrelease-chart-versions
+  annotations:
+    policies.kyverno.io/title: HelmRelease charts should be pinned exactly
+    policies.kyverno.io/severity: medium
+spec:
+  background: false
+  rules:
+    - name: chart-version-must-be-present
+      match:
+        any:
+          - resources:
+              kinds: [HelmRelease]
+      validate:
+        failureAction: Audit
+        message: >-
+          HelmRelease must declare spec.chart.spec.version. Without one the
+          release tracks whatever the upstream repository publishes.
+        pattern:
+          spec:
+            chart:
+              spec:
+                version: "?*"
+
+    - name: chart-version-must-be-exact
+      match:
+        any:
+          - resources:
+              kinds: [HelmRelease]
+      preconditions:
+        all:
+          - key: "{{ request.object.spec.chart.spec.version || '' }}"
+            operator: NotEquals
+            value: ""
+      validate:
+        failureAction: Audit
+        message: >-
+          HelmRelease chart version must be an exact pin (e.g. 1.2.3), not a
+          range. Ranges let the cluster drift without a corresponding commit.
+        deny:
+          conditions:
+            all:
+              - key: "{{ regex_match('^v?[0-9]+\\.[0-9]+\\.[0-9]+$', '{{ request.object.spec.chart.spec.version }}') }}"
+                operator: Equals
+                value: false

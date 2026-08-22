@@ -20,29 +20,29 @@ failed=0
 checked=0
 skipped=0
 
-while IFS=$'\t' read -r name path file sops; do
+while IFS=$'\t' read -r name kpath file sops; do
   [ -n "$name" ] || continue
   label="$(printf '%-16s %-38s' "$name" "$file")"
 
   if [ "$sops" = "yes" ]; then
-    if built="$(kustomize build "$path" 2>&1)"; then
+    if built="$(kustomize build "$kpath" 2>&1)"; then
       count="$(printf '%s\n' "$built" | grep -c '^sops:' || true)"
       echo "$label built OK (${count} encrypted resources), schema check N/A"
       skipped=$((skipped + 1))
     else
       echo "$label BUILD FAILED"
       printf '%s\n' "$built" | sed 's/^/    /'
-      echo "::error file=${file},title=kustomize build failed::Kustomization '${name}' (path ${path}) does not build"
+      echo "::error file=${file},title=kustomize build failed::Kustomization '${name}' (path ${kpath}) does not build"
       failed=1
     fi
     continue
   fi
 
   if ! rendered="$(flux build kustomization "$name" \
-      --path "$path" --kustomization-file "$file" --dry-run 2>&1)"; then
+      --path "$kpath" --kustomization-file "$file" --dry-run 2>&1)"; then
     echo "$label BUILD FAILED"
     printf '%s\n' "$rendered" | sed 's/^/    /'
-    echo "::error file=${file},title=flux build failed::Kustomization '${name}' (path ${path}) does not build"
+    echo "::error file=${file},title=flux build failed::Kustomization '${name}' (path ${kpath}) does not build"
     failed=1
     continue
   fi

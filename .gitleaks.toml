@@ -1,0 +1,36 @@
+# Gitleaks configuration for the FluxCD GitOps tree.
+#
+# Everything sensitive in this repository is SOPS-encrypted at rest, so a
+# gitleaks hit here means either a genuine plaintext leak or a reference to a
+# key *name* that looks like a secret. Allowlists below are deliberately narrow:
+# they match specific value shapes, never whole paths, so that a real secret
+# dropped into an allowlisted file is still caught.
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "age-secret-key"
+description = "age private key"
+regex = '''AGE-SECRET-KEY-1[0-9A-Z]{58}'''
+keywords = ["AGE-SECRET-KEY-"]
+
+[[rules]]
+id = "sops-age-identity-file"
+description = "age identity file contents (private key with comment header)"
+regex = '''#\s*public key:\s*age1[0-9a-z]{58}'''
+keywords = ["public key: age1"]
+
+[allowlist]
+description = "Known non-secret values"
+
+# Authelia references its OIDC signing key by the *filename* inside a mounted
+# secret. The value is a path, not key material; the key itself is encrypted in
+# clusters/*/secrets/authelia-secret.yaml.
+regexes = [
+  '''^oidc\.jwk\.[A-Za-z0-9]+\.pem$''',
+]
+
+# age *recipients* (public keys) are published in .sops.yaml by design; only
+# the corresponding private keys are sensitive, and the age-secret-key rule
+# above catches those.
