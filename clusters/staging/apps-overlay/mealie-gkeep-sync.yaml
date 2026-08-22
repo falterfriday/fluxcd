@@ -1,0 +1,10 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mealie-gkeep-sync
+  namespace: mealie
+spec:
+  values:
+    google:
+      keepListName: "Mealie List (staging)"
+      createListIfMissing: true

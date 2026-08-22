@@ -1,0 +1,15 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mealie-gkeep-sync
+  namespace: mealie
+spec:
+  values:
+    mealie:
+      baseUrl: http://mealie.mealie.svc.cluster.local:10018
+      listName: Mealie List
+    google:
+      email: mealie.gkeep.sync@gmail.com
+      keepListName: Mealie List
+    sync:
+      dryRun: false
