@@ -4,6 +4,7 @@ namespace: authelia
 resources:
   - namespace.yaml
   - cnpg-cluster.yaml
+  - scheduledbackup.yaml
   - helmrelease.yaml
   - assets-configmap.yaml
   - theme-proxy.yaml

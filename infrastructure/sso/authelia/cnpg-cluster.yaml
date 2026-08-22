@@ -16,6 +16,25 @@ spec:
     initdb:
       database: authelia
       owner: authelia
+  backup:
+    retentionPolicy: "30d"
+    target: prefer-standby
+    barmanObjectStore:
+      destinationPath: s3://cnpg-authelia/patch/authelia/cnpg
+      endpointURL: https://rustfs.internal.stplabs.io
+      serverName: authelia-db
+      s3Credentials:
+        accessKeyId:
+          name: authelia-db-backup-s3-creds
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: authelia-db-backup-s3-creds
+          key: ACCESS_SECRET_KEY
+      data:
+        compression: bzip2
+        jobs: 2
+      wal:
+        compression: bzip2
   monitoring:
     enablePodMonitor: true
   resources:

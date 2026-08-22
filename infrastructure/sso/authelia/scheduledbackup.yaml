@@ -1,0 +1,14 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: authelia-db-daily
+  namespace: authelia
+spec:
+  cluster:
+    name: authelia-db
+  method: barmanObjectStore
+  backupOwnerReference: self
+  schedule: "0 30 0 * * *"
+  immediate: true
+  suspend: false
