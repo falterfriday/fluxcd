@@ -1,0 +1,30 @@
+---
+name: flux-version-check
+
+on:
+  schedule:
+    # 07:00 UTC on the first of each month.
+    - cron: '0 7 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: check upstream flux release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Needed to open or update the tracking issue.
+      issues: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Compare pinned Flux version against latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .github/scripts/check-flux-version.sh

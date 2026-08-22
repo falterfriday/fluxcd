@@ -1,0 +1,34 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-run-as-non-root
+  annotations:
+    policies.kyverno.io/title: Workloads should declare runAsNonRoot
+    policies.kyverno.io/severity: medium
+spec:
+  background: false
+  rules:
+    - name: pod-or-container-must-set-run-as-non-root
+      match:
+        any:
+          - resources:
+              kinds: [Deployment, StatefulSet, DaemonSet, Job]
+      validate:
+        failureAction: Audit
+        message: >-
+          Set securityContext.runAsNonRoot: true on the pod or on every
+          container. Relying on the image's default USER is an assumption the
+          next image bump can silently break.
+        anyPattern:
+          - spec:
+              template:
+                spec:
+                  securityContext:
+                    runAsNonRoot: true
+          - spec:
+              template:
+                spec:
+                  containers:
+                    - securityContext:
+                        runAsNonRoot: true
