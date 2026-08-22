@@ -6,6 +6,7 @@ resources:
   - cnpg.yaml
   - grafana.yaml
   - longhorn.yaml
+  - mealie-gkeep-sync.yaml
   - bitnami.yaml
   - metallb.yaml
   - prometheus.yaml

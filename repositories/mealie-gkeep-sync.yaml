@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: mealie-gkeep-sync
+  namespace: flux-system
+spec:
+  interval: 24h
+  url: https://falterfriday.github.io/mealie_gkeep_sync

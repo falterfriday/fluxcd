@@ -4,6 +4,7 @@ resources:
   - ../../../apps
   - ../../../apps/litellm
   - ../../../apps/mealie-ai-config
+  - ../../../apps/mealie-gkeep-sync
 patches:
   - path: mealie.yaml
     target:
