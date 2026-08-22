@@ -10,5 +10,4 @@ spec:
   method: barmanObjectStore
   backupOwnerReference: self
   schedule: "0 30 0 * * *"
-  immediate: true
   suspend: false

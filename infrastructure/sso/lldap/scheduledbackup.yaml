@@ -10,5 +10,6 @@ spec:
   method: barmanObjectStore
   backupOwnerReference: self
   schedule: "0 45 0 * * *"
-  immediate: true
+  # No immediate run: infra-secrets applies after infra-oidc, so the
+  # credentials secret does not exist yet at creation time.
   suspend: false
