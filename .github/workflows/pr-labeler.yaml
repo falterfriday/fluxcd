@@ -1,0 +1,29 @@
+---
+name: pr-labeler
+
+# Label pull requests by the paths they touch, so 'env:production' is visible
+# in the PR list before anyone opens the diff.
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  label:
+    name: apply path labels
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      # No checkout: actions/labeler reads the changed-file list from the API.
+      # This workflow runs as `pull_request_target`, so it holds a writable
+      # token while the PR head is untrusted — checking that code out here is
+      # the classic way to hand a fork's PR control of the token.
+      - uses: actions/labeler@bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13  # v7.0.0
+        with:
+          configuration-path: .github/labeler.yml
+          sync-labels: true

@@ -24,7 +24,7 @@ env:
   TRIVY_SHA256: 2ae6fe3ee734b7fdf11335663e18c75ea12dccc76062f09f164a3b0f8be4371a
   KUSTOMIZE_URL: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.8.1/kustomize_v5.8.1_linux_amd64.tar.gz
   KUSTOMIZE_SHA256: 029a7f0f4e1932c52a0476cf02a0fd855c0bb85694b82c338fc648dcb53a819d
-  FLUX_VERSION: 2.9.4
+  FLUX_VERSION: 2.9.3
 
 jobs:
   scan:
@@ -48,7 +48,7 @@ jobs:
         run: pip install --disable-pip-version-check pyyaml
 
       - name: Install Flux CLI
-        uses: fluxcd/flux2/action@889be9d6cc8afa8ed639e1e1ba4ab678e3b38d8c  # v2.9.4
+        uses: fluxcd/flux2/action@889be9d6cc8afa8ed639e1e1ba4ab678e3b38d8c  # v2.9.4 (action), CLI pinned by FLUX_VERSION
         with:
           version: ${{ env.FLUX_VERSION }}
 
