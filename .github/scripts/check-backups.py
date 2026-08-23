@@ -10,6 +10,8 @@ Two failure modes matter and only one of them is visible in a dashboard:
 
 Read-only: issues `kubectl get`, never mutates.
 
+Run manually against each cluster; there is no CI job for it.
+
 Usage: check-backups.py <kube-context> [--max-age-hours N]
 """
 

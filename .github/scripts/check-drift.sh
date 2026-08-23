@@ -10,7 +10,9 @@
 # running in the cluster, and nothing reports it.
 #
 # Read-only. `flux diff` performs a server-side dry-run and mutates nothing.
-# Requires cluster access, so this runs on a self-hosted runner.
+#
+# Run manually from a machine with cluster access. There is no CI job for this:
+# the cluster endpoints are RFC1918 and no self-hosted runner is registered.
 #
 # Usage: check-drift.sh <cluster-name>   (cluster-name is both the kube-context
 #                                         and the clusters/<name> directory)

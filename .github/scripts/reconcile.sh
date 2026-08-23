@@ -6,7 +6,8 @@
 # pushes the source, waits for every Kustomization to report the merged commit,
 # and fails the run if convergence does not happen.
 #
-# Requires cluster access, so it runs on a self-hosted runner.
+# Run manually from a machine with cluster access — useful after merging to
+# confirm the clusters actually converged on the new commit.
 #
 #   reconcile.sh <cluster> [<git-sha>]              trigger, then wait
 #   reconcile.sh <cluster> [<git-sha>] --check-only wait only, trigger nothing
