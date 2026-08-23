@@ -1,0 +1,49 @@
+---
+"env:production":
+  - changed-files:
+      - any-glob-to-any-file: "clusters/production/**"
+
+"env:staging":
+  - changed-files:
+      - any-glob-to-any-file: "clusters/staging/**"
+
+"area:apps":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "apps/**"
+          - "clusters/*/apps-overlay/**"
+
+"area:infra":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "infrastructure/**"
+          - "repositories/**"
+
+"area:sso":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "infrastructure/sso/**"
+          - "clusters/*/sso/**"
+
+"area:monitoring":
+  - changed-files:
+      - any-glob-to-any-file: "infrastructure/monitoring/**"
+
+"area:storage":
+  - changed-files:
+      - any-glob-to-any-file: "infrastructure/storage/**"
+
+"area:ci":
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
+          - "renovate.json5"
+          - ".yamllint.yaml"
+          - ".gitleaks.toml"
+          - ".trivyignore.yaml"
+
+"secrets":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "clusters/*/secrets/**"
+          - ".sops.yaml"

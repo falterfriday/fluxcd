@@ -28,7 +28,7 @@ env:
   ZIZMOR_SHA256: dd96df044a6e8538d5f423790f453bdd03d49e5b2bcc38214acc41a2f1297839
   KUSTOMIZE_URL: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.8.1/kustomize_v5.8.1_linux_amd64.tar.gz
   KUSTOMIZE_SHA256: 029a7f0f4e1932c52a0476cf02a0fd855c0bb85694b82c338fc648dcb53a819d
-  FLUX_VERSION: 2.9.4
+  FLUX_VERSION: 2.9.3
 
 jobs:
   # --- Blocking ------------------------------------------------------------
@@ -75,7 +75,7 @@ jobs:
         run: pip install --disable-pip-version-check pyyaml
 
       - name: Install Flux CLI
-        uses: fluxcd/flux2/action@889be9d6cc8afa8ed639e1e1ba4ab678e3b38d8c  # v2.9.4
+        uses: fluxcd/flux2/action@889be9d6cc8afa8ed639e1e1ba4ab678e3b38d8c  # v2.9.4 (action), CLI pinned by FLUX_VERSION
         with:
           version: ${{ env.FLUX_VERSION }}
 

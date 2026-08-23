@@ -1,0 +1,15 @@
+# Everything, by default.
+*                           @falterfriday
+
+# Production cluster state: what is running for real.
+/clusters/production/       @falterfriday
+
+# Shared infrastructure: a change here lands on both clusters at once.
+/infrastructure/            @falterfriday
+
+# Encrypted secrets and the rules that decide how they are encrypted.
+/clusters/*/secrets/        @falterfriday
+/.sops.yaml                 @falterfriday
+
+# CI enforces everything else.
+/.github/                   @falterfriday

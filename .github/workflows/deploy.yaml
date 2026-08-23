@@ -1,0 +1,69 @@
+---
+name: deploy
+
+# Post-merge feedback loop (and the deployment record that goes with it).
+#
+# Flux already pulls main on its own schedule, so this does not *cause* the
+# deployment — it makes the outcome visible. Merging otherwise tells you
+# nothing: a manifest that reconciles badly surfaces only in the cluster, up to
+# an hour later, with no link back to the commit that caused it.
+#
+# Requires a self-hosted runner: every cluster endpoint in this homelab is
+# RFC1918 (10.120.x), so GitHub-hosted runners cannot reach them. The runner
+# needs kubeconfig contexts named 'staging' and 'production'.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # Never reconcile two commits into the same cluster at once, and do not cancel
+  # a run in flight — an interrupted wait leaves no record of the outcome.
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  staging:
+    name: staging
+    runs-on: [self-hosted, fluxcd]
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Reconcile and wait
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          GIT_SHA: ${{ github.sha }}
+        run: .github/scripts/record-deployment.sh staging "$GIT_SHA"
+
+  production:
+    name: production
+    # Verification order, not a gate: Flux reconciles production on its own
+    # schedule regardless. This just means the staging result is known first.
+    needs: staging
+    runs-on: [self-hosted, fluxcd]
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Reconcile and wait
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          GIT_SHA: ${{ github.sha }}
+        run: .github/scripts/record-deployment.sh production "$GIT_SHA"

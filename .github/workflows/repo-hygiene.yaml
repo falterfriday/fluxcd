@@ -1,0 +1,57 @@
+---
+name: repo-hygiene
+
+# Governance checks that need no cluster access:
+#   * branch protection on main is still configured as intended
+#   * merged branches are not accumulating
+#
+# Both run monthly and report; branch deletion is opt-in per run.
+
+on:
+  schedule:
+    # 08:00 UTC on the first of each month.
+    - cron: '0 8 1 * *'
+  workflow_dispatch:
+    inputs:
+      delete_merged_branches:
+        description: "Delete branches already merged into main (otherwise report only)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  branch-protection:
+    name: branch protection audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Audit protection on main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: .github/scripts/audit-branch-protection.sh "$REPOSITORY"
+
+  stale-branches:
+    name: stale branches
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # Credentials are persisted on purpose here: deleting a merged branch is
+      # a push, so this job needs a usable token in the git remote.
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with: # zizmor: ignore[artipacked]
+          # Branch comparison needs the full history and all remote refs.
+          fetch-depth: 0
+
+      - name: Report merged branches
+        env:
+          DELETE_MERGED: ${{ inputs.delete_merged_branches || 'false' }}
+        run: .github/scripts/stale-branches.sh

@@ -1,0 +1,71 @@
+---
+name: promotion
+
+# Prepare a staging → production promotion.
+#
+# The two clusters differ on purpose (hostnames, storage sizes, replica counts),
+# so this promotes only the chart version staging has been running, and only
+# when that version is an exact pin. Everything else stays a manual decision.
+#
+# Runs on GitHub-hosted runners: it reads the repository, not the clusters.
+
+on:
+  workflow_dispatch:
+    inputs:
+      open_pr:
+        description: "Open a pull request with the promotions (otherwise report only)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  promote:
+    name: staging to production
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      # Credentials are persisted on purpose: the promotion branch is pushed
+      # from this checkout before the pull request is opened.
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1 # zizmor: ignore[artipacked]
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install --disable-pip-version-check pyyaml
+
+      - name: Install Flux CLI
+        uses: fluxcd/flux2/action@889be9d6cc8afa8ed639e1e1ba4ab678e3b38d8c  # v2.9.4 (action)
+        with:
+          version: '2.9.3'
+
+      - uses: ./.github/actions/install-binary
+        with:
+          name: kustomize
+          url: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.8.1/kustomize_v5.8.1_linux_amd64.tar.gz
+          sha256: 029a7f0f4e1932c52a0476cf02a0fd855c0bb85694b82c338fc648dcb53a819d
+
+      - name: Render manifests
+        run: .github/scripts/render-all.sh "${RUNNER_TEMP}/rendered"
+
+      - name: Report promotable changes
+        id: report
+        run: python3 .github/scripts/promotion.py "${RUNNER_TEMP}/rendered"
+
+      - name: Apply promotions
+        if: ${{ inputs.open_pr && steps.report.outputs.promotable != '0' }}
+        run: python3 .github/scripts/promotion.py "${RUNNER_TEMP}/rendered" --apply
+
+      - name: Open pull request
+        if: ${{ inputs.open_pr && steps.report.outputs.promotable != '0' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ACTOR: ${{ github.actor }}
+        run: .github/scripts/open-promotion-pr.sh
