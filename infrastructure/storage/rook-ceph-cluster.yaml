@@ -101,6 +101,7 @@ spec:
         iteration: 1
       allowUninstallWithVolumeClaimsPresent: false
     removeOSDsIfOutAndSafeToRemove: false
+    cephFileSystems: []
     cephBlockPools:
       - name: ceph-blockpool
         spec:
