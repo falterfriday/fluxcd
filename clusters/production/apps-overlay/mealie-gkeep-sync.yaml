@@ -7,9 +7,9 @@ spec:
   values:
     mealie:
       baseUrl: http://mealie.mealie.svc.cluster.local:10018
-      listName: Mealie List
+      listName: Shopping List
     google:
       email: mealie.gkeep.sync@gmail.com
-      keepListName: Mealie List
+      keepListName: Shopping List
     sync:
       dryRun: false
