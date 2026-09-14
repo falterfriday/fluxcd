@@ -52,6 +52,9 @@ spec:
     prometheus:
       prometheusSpec:
         retention: 30d
+        additionalAlertManagerConfigsSecret:
+          name: alertmanager-remote
+          key: alertmanager-configs.yaml
         remoteWrite:
           - url: https://metrics.core.stplabs.io/api/v1/write
             name: core-vm
