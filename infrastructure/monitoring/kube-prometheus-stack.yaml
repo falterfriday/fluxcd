@@ -52,6 +52,22 @@ spec:
     prometheus:
       prometheusSpec:
         retention: 30d
+        remoteWrite:
+          - url: https://metrics.core.stplabs.io/api/v1/write
+            name: core-vm
+            basicAuth:
+              username:
+                name: vm-write-creds
+                key: username
+              password:
+                name: vm-write-creds
+                key: password
+            queueConfig:
+              capacity: 10000
+              maxShards: 10
+              minShards: 1
+              maxSamplesPerSend: 2000
+              batchSendDeadline: 5s
         serviceMonitorSelectorNilUsesHelmValues: false
         podMonitorSelectorNilUsesHelmValues: false
         ruleSelectorNilUsesHelmValues: false
