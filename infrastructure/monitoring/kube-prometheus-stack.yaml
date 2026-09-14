@@ -46,6 +46,9 @@ spec:
           url: http://loki.monitoring.svc.cluster.local:3100
           access: proxy
           isDefault: false
+    prometheus-node-exporter:
+      tolerations:
+        - operator: Exists
     prometheus:
       prometheusSpec:
         retention: 30d
