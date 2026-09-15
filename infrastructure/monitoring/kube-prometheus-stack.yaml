@@ -33,13 +33,7 @@ spec:
       retries: 3
   values:
     grafana:
-      enabled: true
-      ingress:
-        enabled: false
-      persistence:
-        enabled: true
-        storageClassName: ceph-block
-        size: 2Gi
+      enabled: false
     prometheus-node-exporter:
       tolerations:
         - operator: Exists
@@ -90,30 +84,3 @@ spec:
       serviceMonitor:
         scheme: http
 
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: grafana
-  namespace: monitoring
-  annotations:
-    cert-manager.io/cluster-issuer: cloudflare-cluster-issuer
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-spec:
-  ingressClassName: nginx
-  rules:
-  - host: grafana.patch.stplabs.io
-    http:
-      paths:
-      - backend:
-          service:
-            name: kube-prometheus-stack-grafana
-            port:
-              number: 80
-        path: /
-        pathType: Prefix
-  tls:
-  - hosts:
-    - grafana.patch.stplabs.io
-    secretName: grafana-tls
