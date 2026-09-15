@@ -56,7 +56,7 @@ spec:
           name: alertmanager-remote
           key: alertmanager-configs.yaml
         remoteWrite:
-          - url: https://metrics.core.stplabs.io/api/v1/write
+          - url: https://telemetry.core.stplabs.io/api/v1/write
             name: core-vm
             basicAuth:
               username:
@@ -88,20 +88,13 @@ spec:
       enabled: false
     kubeScheduler:
       enabled: false
+    alertmanager:
+      enabled: false
     kubeEtcd:
       service:
         targetPort: 2381
       serviceMonitor:
         scheme: http
-    alertmanager:
-      alertmanagerSpec:
-        storage:
-          volumeClaimTemplate:
-            spec:
-              storageClassName: ceph-block
-              resources:
-                requests:
-                  storage: 1Gi
 
 ---
 apiVersion: networking.k8s.io/v1
