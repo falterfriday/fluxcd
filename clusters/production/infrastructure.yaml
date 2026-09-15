@@ -160,6 +160,7 @@ spec:
               prometheusSpec:
                 externalLabels:
                   k8s_cluster: production
+                  cluster: production
                 retentionSize: 40GiB
                 storageSpec:
                   volumeClaimTemplate:

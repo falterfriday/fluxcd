@@ -160,6 +160,7 @@ spec:
               prometheusSpec:
                 externalLabels:
                   k8s_cluster: staging
+                  cluster: staging
                 retention: 7d
                 retentionSize: 14GiB
                 storageSpec:
