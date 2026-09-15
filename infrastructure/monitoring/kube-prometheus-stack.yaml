@@ -83,4 +83,3 @@ spec:
         targetPort: 2381
       serviceMonitor:
         scheme: http
-
