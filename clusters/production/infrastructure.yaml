@@ -194,22 +194,29 @@ spec:
                   allow_assign_grafana_admin: true
     - target:
         kind: HelmRelease
-        name: loki
+        name: alloy
       patch: |
         apiVersion: helm.toolkit.fluxcd.io/v2
         kind: HelmRelease
         metadata:
-          name: loki
+          name: alloy
           namespace: monitoring
         spec:
           values:
-            singleBinary:
-              resources:
-                requests:
-                  cpu: "250m"
-                  memory: "256Mi"
-              persistence:
-                size: 100Gi
+            alloy:
+              extraEnv:
+                - name: K8S_CLUSTER
+                  value: production
+                - name: LOKI_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: vm-write-creds
+                      key: username
+                - name: LOKI_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: vm-write-creds
+                      key: password
 
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1

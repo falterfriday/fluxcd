@@ -40,12 +40,6 @@ spec:
         enabled: true
         storageClassName: ceph-block
         size: 2Gi
-      additionalDataSources:
-        - name: Loki
-          type: loki
-          url: http://loki.monitoring.svc.cluster.local:3100
-          access: proxy
-          isDefault: false
     prometheus-node-exporter:
       tolerations:
         - operator: Exists
