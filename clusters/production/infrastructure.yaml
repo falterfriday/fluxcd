@@ -136,16 +136,6 @@ spec:
   wait: true
   patches:
     - target:
-        kind: Ingress
-        name: grafana
-      patch: |
-        - op: replace
-          path: /spec/rules/0/host
-          value: grafana.stplabs.io
-        - op: replace
-          path: /spec/tls/0/hosts/0
-          value: grafana.stplabs.io
-    - target:
         kind: HelmRelease
         name: kube-prometheus-stack
       patch: |
@@ -168,31 +158,6 @@ spec:
                       resources:
                         requests:
                           storage: 50Gi
-            grafana:
-              deploymentStrategy:
-                type: Recreate
-              envValueFrom:
-                GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET:
-                  secretKeyRef:
-                    name: grafana-oidc-secret
-                    key: clientSecret
-              grafana.ini:
-                server:
-                  root_url: https://grafana.stplabs.io
-                auth.generic_oauth:
-                  enabled: true
-                  name: Authelia
-                  allow_sign_up: true
-                  auto_login: true
-                  client_id: grafana
-                  scopes: openid profile email groups
-                  auth_url: https://oidc.stplabs.io/api/oidc/authorization
-                  token_url: https://oidc.stplabs.io/api/oidc/token
-                  api_url: https://oidc.stplabs.io/api/oidc/userinfo
-                  login_attribute_path: preferred_username
-                  groups_attribute_path: groups
-                  role_attribute_path: "contains(groups, 'admins') && 'GrafanaAdmin' || 'Viewer'"
-                  allow_assign_grafana_admin: true
     - target:
         kind: HelmRelease
         name: alloy
