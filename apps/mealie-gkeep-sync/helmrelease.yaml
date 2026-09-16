@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: mealie-gkeep-sync
-      version: "1.0.1"
+      version: "1.1.0"
       sourceRef:
         kind: HelmRepository
         name: mealie-gkeep-sync
