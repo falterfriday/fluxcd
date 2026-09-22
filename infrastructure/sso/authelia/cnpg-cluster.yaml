@@ -21,7 +21,7 @@ spec:
     target: prefer-standby
     barmanObjectStore:
       destinationPath: s3://cnpg-authelia/patch/authelia/cnpg
-      endpointURL: https://rustfs.internal.stplabs.io
+      endpointURL: https://rustfs.core.stplabs.io
       serverName: authelia-db
       s3Credentials:
         accessKeyId:

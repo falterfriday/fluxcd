@@ -39,7 +39,7 @@ spec:
     credentials:
       rustfs:
         type: s3
-        url: https://rustfs.internal.stplabs.io
+        url: https://rustfs.core.stplabs.io
         bucket: cnpg-home-assistant
         path: "production"
         region: us-east-1
