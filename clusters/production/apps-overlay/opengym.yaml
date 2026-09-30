@@ -4,7 +4,14 @@ metadata:
   name: opengym
   namespace: opengym
 spec:
+  valuesFrom:
+    - kind: Secret
+      name: opengym-admin-secret
+      valuesKey: adminUid
+      targetPath: opengym.adminUids[0]
   values:
+    opengym:
+      inviteOnly: true
     ingress:
       enabled: true
       className: nginx
