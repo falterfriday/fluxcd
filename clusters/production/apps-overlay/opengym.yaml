@@ -1,0 +1,24 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: opengym
+  namespace: opengym
+spec:
+  values:
+    ingress:
+      enabled: true
+      className: nginx
+      host: opengym.stplabs.io
+      annotations:
+        cert-manager.io/cluster-issuer: cloudflare-cluster-issuer
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/proxy-body-size: 48m
+      tls:
+        enabled: true
+        secretName: opengym-tls
+    persistence:
+      size: 2Gi
+    media:
+      persistence:
+        size: 1Gi
