@@ -5,6 +5,7 @@ resources:
   - ../../../apps/litellm
   - ../../../apps/mealie-ai-config
   - ../../../apps/mealie-gkeep-sync
+  - ../../../apps/opengym
 patches:
   - path: mealie.yaml
     target:
@@ -18,3 +19,7 @@ patches:
     target:
       kind: HelmRelease
       name: mealie-gkeep-sync
+  - path: opengym.yaml
+    target:
+      kind: HelmRelease
+      name: opengym

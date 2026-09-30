@@ -1,0 +1,10 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: stp-labs
+  namespace: flux-system
+spec:
+  type: oci
+  interval: 1h
+  url: oci://git.core.stplabs.io/stp-labs/charts
