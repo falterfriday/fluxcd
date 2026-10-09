@@ -11,5 +11,3 @@ spec:
           env:
             - name: MANAGE_IMAGE_PROVIDER
               value: "true"
-            - name: PROVIDER_BASE_URL
-              value: https://llm.core.stplabs.io/v1
