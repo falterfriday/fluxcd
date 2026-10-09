@@ -24,7 +24,7 @@ spec:
             - name: PROVIDER_NAME
               value: claude-via-litellm
             - name: PROVIDER_BASE_URL
-              value: http://litellm.litellm.svc.cluster.local:4000/v1
+              value: https://llm.core.stplabs.io/v1
             - name: PROVIDER_MODEL
               value: claude-haiku-4-5
             - name: PROVIDER_TIMEOUT
