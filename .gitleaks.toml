@@ -20,3 +20,15 @@ id = "sops-age-identity-file"
 description = "age identity file contents (private key with comment header)"
 regex = '''#\s*public key:\s*age1[0-9a-z]{58}'''
 keywords = ["public key: age1"]
+
+[allowlist]
+description = "Known non-secret values"
+
+# History only: the removed Authelia deployment referenced its OIDC signing key
+# by *filename* (`key: oidc.jwk.RS256.pem`), which trips generic-api-key. The
+# value is a path, not key material. Nothing in the current tree matches, but
+# the full-history scan (`gitleaks git`) still sees those past commits. Keep
+# this unless history is rewritten.
+regexes = [
+  '''^oidc\.jwk\.[A-Za-z0-9]+\.pem$''',
+]
