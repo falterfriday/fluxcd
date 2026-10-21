@@ -20,10 +20,3 @@ id = "sops-age-identity-file"
 description = "age identity file contents (private key with comment header)"
 regex = '''#\s*public key:\s*age1[0-9a-z]{58}'''
 keywords = ["public key: age1"]
-
-[allowlist]
-description = "Known non-secret values"
-
-# age *recipients* (public keys) are published in .sops.yaml by design; only
-# the corresponding private keys are sensitive, and the age-secret-key rule
-# above catches those.
