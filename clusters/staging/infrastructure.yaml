@@ -203,6 +203,9 @@ spec:
     name: flux-system
   path: ./clusters/staging/secrets
   prune: true
+  commonMetadata:
+    labels:
+      reconcile.fluxcd.io/watch: Enabled
   decryption:
     provider: sops
     secretRef:
