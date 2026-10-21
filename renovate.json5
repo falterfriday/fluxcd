@@ -88,15 +88,6 @@
       matchManagers: ["github-actions"],
       groupName: "github actions",
     },
-    {
-      // bitnamilegacy/* is the frozen archive Bitnami left behind when it moved
-      // its catalogue behind a subscription in 2025. Those images receive no
-      // security updates, so Renovate has nothing to offer here — replacing
-      // them is manual work, tracked separately rather than by this bot.
-      description: "Frozen bitnamilegacy images: no upstream updates exist to track.",
-      matchPackageNames: ["docker.io/bitnamilegacy/**"],
-      enabled: false,
-    },
   ],
 
   // A chart bump changes .github/chart-digests.json. CI reports the staleness

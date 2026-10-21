@@ -24,13 +24,11 @@ keywords = ["public key: age1"]
 [allowlist]
 description = "Known non-secret values"
 
-# Authelia references its OIDC signing key by the *filename* inside a mounted
-# secret. The value is a path, not key material; the key itself is encrypted in
-# clusters/*/secrets/authelia-secret.yaml.
+# History only: the removed Authelia deployment referenced its OIDC signing key
+# by *filename* (`key: oidc.jwk.RS256.pem`), which trips generic-api-key. The
+# value is a path, not key material. Nothing in the current tree matches, but
+# the full-history scan (`gitleaks git`) still sees those past commits. Keep
+# this unless history is rewritten.
 regexes = [
   '''^oidc\.jwk\.[A-Za-z0-9]+\.pem$''',
 ]
-
-# age *recipients* (public keys) are published in .sops.yaml by design; only
-# the corresponding private keys are sensitive, and the age-secret-key rule
-# above catches those.

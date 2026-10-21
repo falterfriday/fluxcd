@@ -1,13 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - authelia.yaml
   - cert-manager.yaml
   - cnpg.yaml
   - grafana.yaml
   - longhorn.yaml
   - mealie-gkeep-sync.yaml
-  - bitnami.yaml
   - metallb.yaml
   - prometheus.yaml
   - rook-release.yaml
