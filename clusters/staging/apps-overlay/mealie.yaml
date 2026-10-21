@@ -12,7 +12,6 @@ spec:
         oidc:
           auth_enabled: true
           signup_enabled: true
-          # Authentik on the core cluster (per-application issuer, slug mealie-staging)
           configuration_url: https://sso.core.stplabs.io/application/o/mealie-staging/.well-known/openid-configuration
           client_id: mealie-staging
           user_group: platform-users
