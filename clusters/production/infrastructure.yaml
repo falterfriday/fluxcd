@@ -14,7 +14,7 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./infrastructure/base
-  prune: false
+  prune: true
   wait: true
 
 ---
@@ -64,7 +64,7 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./infrastructure/operators
-  prune: false
+  prune: true
   wait: true
 
 ---
@@ -83,7 +83,7 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./infrastructure/storage
-  prune: false
+  prune: true
   wait: true
   patches:
     - target:
@@ -113,7 +113,7 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./clusters/production/sso
-  prune: false
+  prune: true
   wait: false
 
 ---
