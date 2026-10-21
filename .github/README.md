@@ -38,7 +38,7 @@ named `staging` and `production`.
 # Did the clusters converge on what is in git?
 .github/scripts/reconcile.sh production "$(git rev-parse --short HEAD)" --check-only
 
-# Does live state still match the repository? (prune: false makes this matter)
+# Does live state still match the repository? (prune: true makes this matter)
 .github/scripts/check-drift.sh staging
 .github/scripts/check-drift.sh production
 

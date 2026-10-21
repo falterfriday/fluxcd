@@ -6,7 +6,7 @@
 #   drift      does the live state still match the manifests?
 #
 # Drift matters more here than in most GitOps repos because almost every
-# Kustomization runs with `prune: false`: a resource removed from git is left
+# Kustomization runs with `prune: true`: a resource removed from git is left
 # running in the cluster, and nothing reports it.
 #
 # Read-only. `flux diff` performs a server-side dry-run and mutates nothing.
