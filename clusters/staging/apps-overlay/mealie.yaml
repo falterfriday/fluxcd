@@ -12,10 +12,12 @@ spec:
         oidc:
           auth_enabled: true
           signup_enabled: true
-          configuration_url: https://oidc.staging.stplabs.io/.well-known/openid-configuration
-          client_id: mealie
-          admin_group: admins
-          provider_name: Authelia
+          # Authentik on the core cluster (per-application issuer, slug mealie-staging)
+          configuration_url: https://sso.core.stplabs.io/application/o/mealie-staging/.well-known/openid-configuration
+          client_id: mealie-staging
+          user_group: platform-users
+          admin_group: platform-admins
+          provider_name: STP Labs
           remember_me: true
           auto_redirect: true
     ingress:
