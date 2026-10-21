@@ -27,7 +27,7 @@ REPO = Path(__file__).resolve().parents[2]
 EXACT = re.compile(r"^v?\d+\.\d+\.\d+$")
 # Per-cluster overlays; the shared bases under infrastructure/ and apps/ are
 # common to both clusters and so are never a promotion target.
-OVERLAY_DIRS = ("apps-overlay", "sso")
+OVERLAY_DIRS = ("apps-overlay",)
 
 
 def effective_versions(rendered: Path, cluster: str) -> dict[str, str]:

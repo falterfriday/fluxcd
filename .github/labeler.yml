@@ -19,12 +19,6 @@
           - "infrastructure/**"
           - "repositories/**"
 
-"area:sso":
-  - changed-files:
-      - any-glob-to-any-file:
-          - "infrastructure/sso/**"
-          - "clusters/*/sso/**"
-
 "area:monitoring":
   - changed-files:
       - any-glob-to-any-file: "infrastructure/monitoring/**"

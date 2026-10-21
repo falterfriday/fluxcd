@@ -24,13 +24,6 @@ keywords = ["public key: age1"]
 [allowlist]
 description = "Known non-secret values"
 
-# Authelia references its OIDC signing key by the *filename* inside a mounted
-# secret. The value is a path, not key material; the key itself is encrypted in
-# clusters/*/secrets/authelia-secret.yaml.
-regexes = [
-  '''^oidc\.jwk\.[A-Za-z0-9]+\.pem$''',
-]
-
 # age *recipients* (public keys) are published in .sops.yaml by design; only
 # the corresponding private keys are sensitive, and the age-secret-key rule
 # above catches those.
