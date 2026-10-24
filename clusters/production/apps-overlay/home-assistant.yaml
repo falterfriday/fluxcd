@@ -25,10 +25,6 @@ spec:
       valuesKey: encrKey
       targetPath: credentials.rustfs.encrKey
   values:
-    # Chart 29+ defaults to TrueCharts' rebuilt image (oci.trueforge.org/containerforge/home-assistant).
-    # Keep the upstream image HA itself publishes and supports. Promotion only carries the chart
-    # version across, so keep this in step with the staging overlay by hand.
-    # Bump tag + digest together; resolve the digest from the multi-arch index, not a per-arch manifest.
     image:
       repository: docker.io/homeassistant/home-assistant
       tag: "2026.10.3@sha256:407b89cd11a8cb67d388d21739a226c74acbbebe1ac59e3b83b11b43ce76b98f"
