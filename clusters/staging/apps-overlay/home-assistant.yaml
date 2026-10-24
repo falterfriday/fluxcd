@@ -7,22 +7,6 @@ spec:
   chart:
     spec:
       version: "32.0.6"
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: Deployment
-              name: home-assistant
-            patch: |
-              - op: add
-                path: /spec/template/spec/affinity
-                value:
-                  nodeAffinity:
-                    requiredDuringSchedulingIgnoredDuringExecution:
-                      nodeSelectorTerms:
-                        - matchExpressions:
-                            - key: node-role.kubernetes.io/control-plane
-                              operator: DoesNotExist
   valuesFrom:
     - kind: Secret
       name: home-assistant-db-secret
@@ -44,50 +28,8 @@ spec:
     image:
       repository: git.core.stplabs.io/stp-labs/home-assistant
       tag: "2026.10.3@sha256:d5feb4cbc04cdf64e8a2955138e46a82c740b7b59a31e25a654aa2255cbfe6c2"
-    workload:
-      main:
-        podSpec:
-          hostNetwork: true
-    # Chart init.sh minus its unpinned HACS download; drop when the chart stops doing that
-    configmap:
-      init:
-        data:
-          init.sh: |-
-            #!/bin/sh
-            {{- $haDBURL := (printf "%s?client_encoding=utf8" ($.Values.cnpg.main.creds.std | trimAll "\"")) }}
-            config="/config/configuration.yaml"
-            default="/config/init"
-            if [ ! -f "$config" ]; then
-              echo "File [$config] does NOT exist. Creating..."
-              cp "$default/configuration.yaml.default" "$config"
-            fi
-            if ! grep -q "recorder:" "$config"; then
-              echo "Section [recorder] does NOT exist in [$config]. Appending..."
-              echo "" >> "$config"
-              cat "$default/recorder.default" >> "$config"
-            fi
-
-            echo "Updating database URL"
-            yq -i '.recorder.db_url = "{{ $haDBURL }}"' "$config"
-            echo "Done"
-
-            echo "Creating include files..."
-            for include_file in groups.yaml automations.yaml scripts.yaml scenes.yaml; do
-              if [ ! -f "/config/$include_file" ]; then
-                echo "File [$include_file] missing. Creating"
-                touch "/config/$include_file"
-              fi
-            done
     ingress:
       main:
-        annotations:
-          nginx.ingress.kubernetes.io/ssl-passthrough: null
-          nginx.ingress.kubernetes.io/proxy-real-ip-cidr: null
-          nginx.ingress.kubernetes.io/use-forwarded-headers: null
-          nginx.ingress.kubernetes.io/rate-limit: null
-          nginx.ingress.kubernetes.io/rate-limit-window: null
-          nginx.ingress.kubernetes.io/websocket-services: null
-          nginx.ingress.kubernetes.io/proxy-connect-timeout: "10"
         hosts:
           - host: home-assistant.staging.stplabs.io
             paths:
