@@ -1,0 +1,327 @@
+title: Home
+views:
+  - title: Home
+    path: home
+    icon: mdi:home
+    type: sections
+    max_columns: 4
+    badges:
+      - type: entity
+        entity: person.patrick
+      - type: entity
+        entity: weather.forecast_home
+    sections:
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Favorites
+            icon: mdi:star
+          - type: tile
+            entity: light.kitchen_lights
+            name: Kitchen
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+            grid_options:
+              columns: 4
+          - type: tile
+            entity: light.living_room_lights
+            name: Living Room
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+            grid_options:
+              columns: 4
+          - type: tile
+            entity: light.laundry_room_lights
+            name: Laundry Room
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+            grid_options:
+              columns: 4
+          - type: tile
+            entity: switch.back_yard_lights
+            name: Back Yard
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+            grid_options:
+              columns: 4
+          - type: tile
+            entity: switch.lamp
+            name: Office Lamp
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+            grid_options:
+              columns: 4
+          - type: tile
+            entity: switch.lamp_2
+            name: Bedroom Lamp
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+            grid_options:
+              columns: 4
+          - type: tile
+            entity: switch.fan
+            name: Office Fan
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+            grid_options:
+              columns: 4
+          - type: tile
+            entity: humidifier.living_room_humidifier_1
+            name: Humidifier 1
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+            grid_options:
+              columns: 4
+          - type: tile
+            entity: humidifier.living_room_humidifier_2
+            name: Humidifier 2
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+            grid_options:
+              columns: 4
+
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Solar
+            icon: mdi:solar-power-variant
+          - type: tile
+            entity: sensor.envoy_482445039012_current_power_production
+            name: Producing
+            grid_options:
+              columns: 4
+          - type: tile
+            entity: sensor.envoy_482445039012_current_power_consumption
+            name: Using
+            grid_options:
+              columns: 4
+          - type: tile
+            entity: sensor.envoy_482445039012_current_net_power_consumption
+            name: From grid
+            grid_options:
+              columns: 4
+          - type: history-graph
+            title: Today
+            hours_to_show: 24
+            entities:
+              - entity: sensor.envoy_482445039012_current_power_production
+                name: Producing
+              - entity: sensor.envoy_482445039012_current_power_consumption
+                name: Using
+          - type: statistics-graph
+            title: Daily energy, last 30 days
+            chart_type: bar
+            period: day
+            days_to_show: 30
+            stat_types:
+              - change
+            entities:
+              - entity: sensor.envoy_482445039012_energy_production_today
+                name: Produced
+              - entity: sensor.envoy_482445039012_energy_consumption_today
+                name: Used
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Living Room
+            icon: mdi:sofa
+          - type: tile
+            entity: light.living_room_lights
+            name: Lights
+          - type: tile
+            entity: humidifier.living_room_humidifier_1
+            name: Humidifier 1
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: humidifier.living_room_humidifier_2
+            name: Humidifier 2
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: sensor.living_room_humidifier_1_humidity
+            name: Humidity 1
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: sensor.living_room_humidifier_2_humidity
+            name: Humidity 2
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: binary_sensor.living_room_humidifier_1_low_water
+            name: Humidifier 1 needs water
+            visibility:
+              - condition: state
+                entity: binary_sensor.living_room_humidifier_1_low_water
+                state: "on"
+          - type: tile
+            entity: binary_sensor.living_room_humidifier_2_low_water
+            name: Humidifier 2 needs water
+            visibility:
+              - condition: state
+                entity: binary_sensor.living_room_humidifier_2_low_water
+                state: "on"
+          - type: tile
+            entity: vacuum.downstairs_litter_box
+            name: Litter-Robot
+          - type: tile
+            entity: sensor.downstairs_waste_drawer
+            name: Waste drawer
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: sensor.downstairs_litter_level
+            name: Litter level
+            grid_options:
+              columns: 6
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Master Bedroom
+            icon: mdi:bed
+          - type: tile
+            entity: switch.lamp_2
+            name: Lamp
+          - type: tile
+            entity: humidifier.oasismisttm_4_5l
+            name: Humidifier
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: sensor.oasismisttm_4_5l_humidity
+            name: Humidity
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: binary_sensor.oasismisttm_4_5l_low_water
+            name: Humidifier needs water
+            visibility:
+              - condition: state
+                entity: binary_sensor.oasismisttm_4_5l_low_water
+                state: "on"
+          - type: tile
+            entity: vacuum.upstairs_litter_box
+            name: Litter-Robot
+          - type: tile
+            entity: sensor.upstairs_waste_drawer
+            name: Waste drawer
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: sensor.upstairs_litter_level
+            name: Litter level
+            grid_options:
+              columns: 6
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Office
+            icon: mdi:desk
+          - type: tile
+            entity: switch.lamp
+            name: Lamp
+          - type: tile
+            entity: switch.fan
+            name: Fan
+          - type: tile
+            entity: switch.printer
+            name: Printer
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Kitchen & Laundry
+            icon: mdi:silverware-fork-knife
+          - type: tile
+            entity: light.kitchen_lights
+            name: Kitchen
+          - type: tile
+            entity: light.laundry_room_lights
+            name: Laundry Room
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Outside
+            icon: mdi:tree
+          - type: tile
+            entity: switch.back_yard_lights
+            name: Back Yard Lights
+          - type: weather-forecast
+            entity: weather.forecast_home
+            forecast_type: daily
+
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Cats
+            icon: mdi:cat
+          - type: tile
+            entity: sensor.estrella_weight
+            name: Estrella
+            grid_options:
+              columns: 4
+          - type: tile
+            entity: sensor.heisenberg_weight
+            name: Heisenberg
+            grid_options:
+              columns: 4
+          - type: tile
+            entity: sensor.lusin_weight
+            name: Lusin
+            grid_options:
+              columns: 4
+          - type: tile
+            entity: sensor.estrella_visits_today
+            name: Estrella visits
+            grid_options:
+              columns: 4
+          - type: tile
+            entity: sensor.heisenberg_visits_today
+            name: Heisenberg visits
+            grid_options:
+              columns: 4
+          - type: tile
+            entity: sensor.lusin_visits_today
+            name: Lusin visits
+            grid_options:
+              columns: 4
+          - type: statistics-graph
+            title: Weight, last 90 days
+            chart_type: line
+            period: day
+            days_to_show: 90
+            stat_types:
+              - mean
+            entities:
+              - entity: sensor.estrella_weight
+                name: Estrella
+              - entity: sensor.heisenberg_weight
+                name: Heisenberg
+              - entity: sensor.lusin_weight
+                name: Lusin

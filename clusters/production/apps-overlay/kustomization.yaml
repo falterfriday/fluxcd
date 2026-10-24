@@ -11,6 +11,13 @@ configMapGenerator:
     behavior: merge
     files:
       - home-assistant-packages/voice_assistants.yaml
+      - home-assistant-packages/dashboards.yaml
+    options:
+      disableNameSuffixHash: true
+  - name: home-assistant-dashboards
+    namespace: home-assistant
+    files:
+      - home-assistant-dashboards/home.yaml
     options:
       disableNameSuffixHash: true
 patches:
