@@ -1,0 +1,20 @@
+homekit:
+  - name: Home Assistant Bridge
+    port: 21063
+    filter:
+      include_entities: &voice_entities
+        - light.kitchen_lights
+        - light.living_room_lights
+        - light.laundry_room_lights
+        - switch.back_yard_lights
+        - switch.lamp
+        - switch.lamp_2
+        - switch.fan
+        - switch.printer
+        - switch.downstairs_litter_robot_4
+        - switch.upstairs_litter_robot_4
+
+cloud:
+  google_actions:
+    filter:
+      include_entities: *voice_entities
