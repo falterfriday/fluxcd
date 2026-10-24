@@ -3,3 +3,10 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - helmrelease.yaml
+configMapGenerator:
+  - name: home-assistant-packages
+    namespace: home-assistant
+    files:
+      - config/packages/recorder.yaml
+    options:
+      disableNameSuffixHash: true
