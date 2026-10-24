@@ -28,6 +28,29 @@ spec:
     image:
       repository: docker.io/homeassistant/home-assistant
       tag: "2026.10.3@sha256:407b89cd11a8cb67d388d21739a226c74acbbebe1ac59e3b83b11b43ce76b98f"
+    # TEMPORARY HOTFIX (2026-10-24) - production only, until it moves to the in-house image
+    # (git.core.stplabs.io/stp-labs/home-assistant), which carries the fix. Delete this block then.
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  F="$(python3 -c 'import importlib.util as u; print(u.find_spec("pylutron_caseta").submodule_search_locations[0])')/smartbridge.py"
+                  V="$(python3 -c 'import importlib.metadata as m; print(m.version("pylutron-caseta"))')"
+                  if [ "$V" != "0.29.0" ]; then
+                    echo "caseta-hotfix: pylutron-caseta is $V, not 0.29.0 - skipping; remove this hotfix from the HelmRelease"
+                  elif grep -q 'ssl_context.check_hostname = False' "$F"; then
+                    echo "caseta-hotfix: already applied"
+                  elif grep -q '^ *ssl_context.verify_mode = ssl.CERT_REQUIRED$' "$F"; then
+                    sed -i 's/^\( *\)ssl_context.verify_mode = ssl.CERT_REQUIRED$/&\n\1ssl_context.check_hostname = False/' "$F" && echo "caseta-hotfix: applied to $F"
+                  else
+                    echo "caseta-hotfix: WARNING patch target not found in $F - starting unpatched"
+                  fi
+                  exec /init
     ingress:
       main:
         hosts:
