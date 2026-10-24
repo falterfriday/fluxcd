@@ -82,6 +82,17 @@ spec:
         targetSelector:
           main:
             main: {}
+      dashboards:
+        enabled: true
+        type: configmap
+        objectName: home-assistant-dashboards
+        expandObjectName: false
+        optional: true
+        mountPath: /config/dashboards
+        readOnly: true
+        targetSelector:
+          main:
+            main: {}
     service:
       metrics:
         enabled: false

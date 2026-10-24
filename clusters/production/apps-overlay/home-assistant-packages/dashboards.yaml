@@ -1,0 +1,8 @@
+lovelace:
+  dashboards:
+    dashboard-home:
+      mode: yaml
+      title: Home
+      icon: mdi:home
+      show_in_sidebar: true
+      filename: dashboards/home.yaml
