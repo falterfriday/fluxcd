@@ -28,6 +28,37 @@ spec:
     image:
       repository: git.core.stplabs.io/stp-labs/home-assistant
       tag: "2026.10.3@sha256:d5feb4cbc04cdf64e8a2955138e46a82c740b7b59a31e25a654aa2255cbfe6c2"
+    persistence:
+      packages:
+        enabled: true
+        type: configmap
+        objectName: home-assistant-packages
+        expandObjectName: false
+        mountPath: /config/packages
+        readOnly: true
+        targetSelector:
+          main:
+            main: {}
+    configmap:
+      init:
+        data:
+          configuration.yaml.default: |-
+            default_config:
+            homeassistant:
+              packages: !include_dir_named packages
+            automation: !include automations.yaml
+            script: !include scripts.yaml
+            scene: !include scenes.yaml
+            recorder:
+              db_url: ""
+          init.sh: |-
+            #!/bin/sh
+            set -e
+            cp /config/init/configuration.yaml.default /config/configuration.yaml
+            yq -i '.recorder.db_url = "{{ printf "%s?client_encoding=utf8" ($.Values.cnpg.main.creds.std | trimAll "\"") }}"' /config/configuration.yaml
+            for f in automations.yaml scripts.yaml scenes.yaml; do
+              [ -f "/config/$f" ] || touch "/config/$f"
+            done
     ingress:
       main:
         hosts:

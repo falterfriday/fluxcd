@@ -1,0 +1,7 @@
+recorder:
+  purge_keep_days: 14
+  exclude:
+    entities:
+      - sun.sun
+    entity_globs:
+      - sensor.zigbee_antenna_*_chip_temp
