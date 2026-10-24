@@ -19,11 +19,61 @@ spec:
   upgrade:
     remediation:
       retries: 3
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: home-assistant
+            patch: |
+              - op: add
+                path: /spec/template/spec/affinity
+                value:
+                  nodeAffinity:
+                    requiredDuringSchedulingIgnoredDuringExecution:
+                      nodeSelectorTerms:
+                        - matchExpressions:
+                            - key: node-role.kubernetes.io/control-plane
+                              operator: DoesNotExist
   values:
     podOptions:
       defaultAffinity: false
     image:
       pullPolicy: Always
+    workload:
+      main:
+        podSpec:
+          hostNetwork: true
+    # Chart init.sh minus its unpinned HACS download; drop when the chart stops doing that
+    configmap:
+      init:
+        data:
+          init.sh: |-
+            #!/bin/sh
+            {{- $haDBURL := (printf "%s?client_encoding=utf8" ($.Values.cnpg.main.creds.std | trimAll "\"")) }}
+            config="/config/configuration.yaml"
+            default="/config/init"
+            if [ ! -f "$config" ]; then
+              echo "File [$config] does NOT exist. Creating..."
+              cp "$default/configuration.yaml.default" "$config"
+            fi
+            if ! grep -q "recorder:" "$config"; then
+              echo "Section [recorder] does NOT exist in [$config]. Appending..."
+              echo "" >> "$config"
+              cat "$default/recorder.default" >> "$config"
+            fi
+
+            echo "Updating database URL"
+            yq -i '.recorder.db_url = "{{ $haDBURL }}"' "$config"
+            echo "Done"
+
+            echo "Creating include files..."
+            for include_file in groups.yaml automations.yaml scripts.yaml scenes.yaml; do
+              if [ ! -f "/config/$include_file" ]; then
+                echo "File [$include_file] missing. Creating"
+                touch "/config/$include_file"
+              fi
+            done
     persistence:
       config:
         enabled: true
@@ -42,12 +92,6 @@ spec:
           cert-manager.io/cluster-issuer: cloudflare-cluster-issuer
           nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
           nginx.ingress.kubernetes.io/proxy-body-size: "100m"
-          nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
+          nginx.ingress.kubernetes.io/proxy-connect-timeout: "10"
           nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
-          nginx.ingress.kubernetes.io/proxy-real-ip-cidr: "0.0.0.0/0"
           nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
-          nginx.ingress.kubernetes.io/rate-limit: "100"
-          nginx.ingress.kubernetes.io/rate-limit-window: "1m"
-          nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-          nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
-          nginx.ingress.kubernetes.io/websocket-services: home-assistant
