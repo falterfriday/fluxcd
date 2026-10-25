@@ -4,3 +4,4 @@ resources:
   - cnpg.yaml
   - prometheus-operator-crds.yaml
   - rook-ceph.yaml
+  - volsync.yaml
