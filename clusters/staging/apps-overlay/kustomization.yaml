@@ -5,6 +5,7 @@ resources:
   - ../../../apps/mealie-ai-config
   - ../../../apps/mealie-gkeep-sync
   - ../../../apps/opengym
+  - home-assistant-backup.yaml
 patches:
   - path: mealie.yaml
     target:
