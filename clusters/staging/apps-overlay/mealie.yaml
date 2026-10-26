@@ -33,11 +33,10 @@ spec:
     persistence:
       data:
         size: 1Gi
-    credentials:
-      rustfs:
-        path: "staging"
     cnpg:
       main:
+        backups:
+          enabled: false
         cluster:
           storage:
             size: 1Gi
