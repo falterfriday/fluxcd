@@ -8,7 +8,6 @@ spec:
   configuration:
     destinationPath: s3://cnpg-mealie/staging/mealie/cnpg
     endpointURL: https://rustfs.core.stplabs.io
-    serverName: mealie-cnpg-main
     s3Credentials:
       accessKeyId:
         name: mealie-backup-secret

@@ -8,7 +8,6 @@ spec:
   configuration:
     destinationPath: s3://cnpg-home-assistant/staging/home-assistant/cnpg
     endpointURL: https://rustfs.core.stplabs.io
-    serverName: home-assistant-cnpg-main
     s3Credentials:
       accessKeyId:
         name: home-assistant-backup-secret
