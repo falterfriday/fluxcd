@@ -6,6 +6,8 @@ resources:
   - ../../../apps/mealie-gkeep-sync
   - ../../../apps/opengym
   - home-assistant-backup.yaml
+  - home-assistant-cnpg-backup.yaml
+  - mealie-cnpg-backup.yaml
 patches:
   - path: mealie.yaml
     target:
@@ -23,3 +25,45 @@ patches:
     target:
       kind: HelmRelease
       name: opengym
+  - target:
+      kind: HelmRelease
+      name: home-assistant
+    patch: |
+      - op: add
+        path: /spec/postRenderers/0/kustomize/patches/-
+        value:
+          target:
+            group: postgresql.cnpg.io
+            kind: Cluster
+            name: home-assistant-cnpg-main
+          patch: |
+            - op: add
+              path: /spec/plugins
+              value:
+                - name: barman-cloud.cloudnative-pg.io
+                  isWALArchiver: true
+                  parameters:
+                    barmanObjectName: home-assistant-cnpg-main
+                    serverName: home-assistant-cnpg-main
+  - target:
+      kind: HelmRelease
+      name: mealie
+    patch: |
+      - op: add
+        path: /spec/postRenderers
+        value:
+          - kustomize:
+              patches:
+                - target:
+                    group: postgresql.cnpg.io
+                    kind: Cluster
+                    name: mealie-cnpg-main
+                  patch: |
+                    - op: add
+                      path: /spec/plugins
+                      value:
+                        - name: barman-cloud.cloudnative-pg.io
+                          isWALArchiver: true
+                          parameters:
+                            barmanObjectName: mealie-cnpg-main
+                            serverName: mealie-cnpg-main

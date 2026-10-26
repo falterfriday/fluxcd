@@ -12,18 +12,6 @@ spec:
       name: home-assistant-db-secret
       valuesKey: password
       targetPath: cnpg.main.password
-    - kind: Secret
-      name: home-assistant-backup-secret
-      valuesKey: accessKey
-      targetPath: credentials.rustfs.accessKey
-    - kind: Secret
-      name: home-assistant-backup-secret
-      valuesKey: secretKey
-      targetPath: credentials.rustfs.secretKey
-    - kind: Secret
-      name: home-assistant-backup-secret
-      valuesKey: encrKey
-      targetPath: credentials.rustfs.encrKey
   values:
     image:
       repository: git.core.stplabs.io/stp-labs/home-assistant
@@ -39,13 +27,6 @@ spec:
           - hosts:
               - home-assistant.staging.stplabs.io
             secretName: home-assistant-tls
-    credentials:
-      rustfs:
-        type: s3
-        url: https://rustfs.core.stplabs.io
-        bucket: cnpg-home-assistant
-        path: "staging"
-        region: us-east-1
     cnpg:
       main:
         cluster:
@@ -53,13 +34,3 @@ spec:
             size: 5Gi
           walStorage:
             size: 5Gi
-        backups:
-          enabled: true
-          credentials: rustfs
-          retentionPolicy: "30d"
-          scheduledBackups:
-            - name: daily-backup
-              schedule: "0 0 0 * * *"
-              backupOwnerReference: self
-              immediate: true
-              suspend: false
