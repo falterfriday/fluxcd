@@ -57,6 +57,7 @@ metadata:
 spec:
   dependsOn:
     - name: repositories
+    - name: infra-base
   interval: 1h
   retryInterval: 1m
   timeout: 5m
