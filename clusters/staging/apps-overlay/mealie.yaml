@@ -35,8 +35,6 @@ spec:
         size: 1Gi
     cnpg:
       main:
-        backups:
-          enabled: false
         cluster:
           storage:
             size: 1Gi
