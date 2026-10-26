@@ -1,0 +1,23 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: home-assistant-config
+  namespace: home-assistant
+spec:
+  sourcePVC: home-assistant-config
+  trigger:
+    schedule: "30 3 * * *"
+  restic:
+    repository: home-assistant-volsync-secret
+    copyMethod: Snapshot
+    volumeSnapshotClassName: ceph-block
+    storageClassName: ceph-block
+    cacheCapacity: 1Gi
+    pruneIntervalDays: 7
+    retain:
+      daily: 7
+      weekly: 4
+      monthly: 6
+    moverSecurityContext:
+      runAsUser: 0
+      runAsGroup: 0
