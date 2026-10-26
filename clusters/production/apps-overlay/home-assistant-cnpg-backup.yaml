@@ -1,0 +1,42 @@
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: home-assistant-cnpg-main
+  namespace: home-assistant
+spec:
+  retentionPolicy: "30d"
+  configuration:
+    destinationPath: s3://cnpg-home-assistant/production/home-assistant/cnpg
+    endpointURL: https://rustfs.core.stplabs.io
+    s3Credentials:
+      accessKeyId:
+        name: home-assistant-backup-secret
+        key: accessKey
+      secretAccessKey:
+        name: home-assistant-backup-secret
+        key: secretKey
+    data:
+      compression: bzip2
+      jobs: 2
+    wal:
+      compression: bzip2
+  instanceSidecarConfiguration:
+    env:
+      - name: AWS_DEFAULT_REGION
+        value: us-east-1
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: home-assistant-cnpg-main-daily
+  namespace: home-assistant
+spec:
+  cluster:
+    name: home-assistant-cnpg-main
+  schedule: "0 0 0 * * *"
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io
+  target: prefer-standby
+  backupOwnerReference: self
+  immediate: false

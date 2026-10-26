@@ -33,9 +33,6 @@ spec:
           - hosts:
               - mealie.stplabs.io
             secretName: mealie-tls
-    credentials:
-      rustfs:
-        path: "prod"
     persistence:
       data:
         size: 1Gi

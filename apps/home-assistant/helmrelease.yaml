@@ -35,6 +35,19 @@ spec:
                         - matchExpressions:
                             - key: node-role.kubernetes.io/control-plane
                               operator: DoesNotExist
+          - target:
+              group: postgresql.cnpg.io
+              kind: Cluster
+              name: home-assistant-cnpg-main
+            patch: |
+              - op: add
+                path: /spec/plugins
+                value:
+                  - name: barman-cloud.cloudnative-pg.io
+                    isWALArchiver: true
+                    parameters:
+                      barmanObjectName: home-assistant-cnpg-main
+                      serverName: home-assistant-cnpg-main
   values:
     podOptions:
       defaultAffinity: false
