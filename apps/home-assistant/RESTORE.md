@@ -19,6 +19,16 @@ HA is down from step 2 to step 5. Set `CTX` to `staging` or `production`.
    kubectl --context $CTX -n home-assistant scale deploy home-assistant --replicas=0
    kubectl --context $CTX -n home-assistant wait --for=delete pod -l app.kubernetes.io/name=home-assistant --timeout=120s
    ```
+   Optional, so the restore can be undone: back up the current state first. Skip this if the volume is corrupt.
+   ```sh
+   kubectl --context $CTX -n home-assistant patch replicationsource home-assistant-config --type=merge \
+     -p '{"spec":{"trigger":{"manual":"pre-restore"}}}'
+   kubectl --context $CTX -n home-assistant wait replicationsource home-assistant-config \
+     --for=jsonpath='{.status.lastManualSync}'=pre-restore --timeout=600s
+   kubectl --context $CTX -n home-assistant patch replicationsource home-assistant-config --type=json \
+     -p '[{"op":"remove","path":"/spec/trigger/manual"}]'
+   ```
+   The backup you want is now `previous: 1` in step 3, not `0`.
 3. Restore. Pick the backup with `previous` (0 = latest, 1 = the one before) or replace it with
    `restoreAsOf: "2026-10-26T12:00:00Z"`:
    ```sh
