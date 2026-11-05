@@ -3,10 +3,12 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - helmrelease.yaml
+  - servicemonitor.yaml
 configMapGenerator:
   - name: home-assistant-packages
     namespace: home-assistant
     files:
       - config/packages/recorder.yaml
+      - config/packages/prometheus.yaml
     options:
       disableNameSuffixHash: true

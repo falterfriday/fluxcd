@@ -1,0 +1,9 @@
+prometheus:
+  filter:
+    exclude_domains:
+      - button
+      - event
+      - notify
+      - stt
+      - tts
+      - todo
