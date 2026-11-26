@@ -6,7 +6,7 @@ metadata:
 spec:
   chart:
     spec:
-      version: "27.25.0"
+      version: "29.0.0"
   values:
     mealie:
       api:
@@ -50,19 +50,20 @@ spec:
           main:
             main:
               mountPath: /nltk_data
-    cnpg:
-      main:
-        cluster:
-          # PG18 migration, phase 1/4: same major (16), OS base bullseye -> trixie.
-          # CNPG in-place major upgrades run the old binaries inside the new image, so both
-          # must share an OS base; legacy 16.15 (bullseye, libssl1.1) cannot upgrade into
-          # 18-standard-trixie. See staging incident 2026-11-26.
-          imageName: ghcr.io/cloudnative-pg/postgresql:16.16-standard-trixie@sha256:c1d2ebeaf7b254264bdb63997270cc9d5e007ba5be4efe6112ae801d1ad68118
-          instances: 2
-          resources:
-            limits: {}
-            requests: {}
-          storage:
-            size: 3Gi
-          walStorage:
-            size: 3Gi
+    dependencies:
+      postgresql:
+        operator:
+          cluster:
+            # PG18 migration, phase 2/4: chart 29 values layout; still pinned to PG16 trixie.
+            # CNPG in-place major upgrades run the old binaries inside the new image, so both
+            # must share an OS base; legacy 16.15 (bullseye, libssl1.1) cannot upgrade into
+            # 18-standard-trixie. See staging incident 2026-11-26.
+            imageName: ghcr.io/cloudnative-pg/postgresql:16.16-standard-trixie@sha256:c1d2ebeaf7b254264bdb63997270cc9d5e007ba5be4efe6112ae801d1ad68118
+            instances: 2
+            resources:
+              limits: {}
+              requests: {}
+            storage:
+              size: 3Gi
+            walStorage:
+              size: 3Gi
