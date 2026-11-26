@@ -44,14 +44,3 @@ patches:
     target:
       kind: HelmRelease
       name: opengym
-  - target:
-      kind: HelmRelease
-      name: mealie
-    patch: |
-      - op: add
-        path: /spec/valuesFrom/-
-        value:
-          kind: Secret
-          name: mealie-db-secret
-          valuesKey: password
-          targetPath: dependencies.postgresql.depconfig.password

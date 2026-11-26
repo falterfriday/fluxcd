@@ -40,7 +40,7 @@ spec:
     - kind: Secret
       name: mealie-db-secret
       valuesKey: password
-      targetPath: cnpg.main.password
+      targetPath: dependencies.postgresql.depconfig.password
     - kind: Secret
       name: mealie-oidc-secret
       valuesKey: clientSecret

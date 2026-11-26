@@ -13,19 +13,6 @@ patches:
     target:
       kind: HelmRelease
       name: mealie
-  # Chart >=29 reads the DB password from dependencies.postgresql.depconfig.password
-  # (base still targets cnpg.main.password for prod on chart 27.x)
-  - target:
-      kind: HelmRelease
-      name: mealie
-    patch: |
-      - op: add
-        path: /spec/valuesFrom/-
-        value:
-          kind: Secret
-          name: mealie-db-secret
-          valuesKey: password
-          targetPath: dependencies.postgresql.depconfig.password
   - path: home-assistant.yaml
     target:
       kind: HelmRelease

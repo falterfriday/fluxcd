@@ -33,14 +33,10 @@ spec:
     persistence:
       data:
         size: 1Gi
-    # Chart >=29 moved CNPG config from cnpg.main to dependencies.postgresql.operator;
-    # cnpg.main.* is silently ignored there (it rendered 100Gi PVCs and a placeholder DB password).
     dependencies:
       postgresql:
         operator:
           cluster:
-            # No imageName: chart default (pgVersion 18, 18.7-standard-trixie).
-            # In-place major upgrades need old and new images on the same OS base (both trixie).
             storage:
               size: 1Gi
             walStorage:
