@@ -33,10 +33,17 @@ spec:
     persistence:
       data:
         size: 1Gi
-    cnpg:
-      main:
-        cluster:
-          storage:
-            size: 1Gi
-          walStorage:
-            size: 1Gi
+    # Chart >=29 moved CNPG config from cnpg.main to dependencies.postgresql.operator;
+    # cnpg.main.* is silently ignored there (it rendered 100Gi PVCs and a placeholder DB password).
+    dependencies:
+      postgresql:
+        operator:
+          cluster:
+            # Pinned to PG16 on trixie to recover from the failed 16->18 major upgrade
+            # (legacy bullseye 16.15 binaries can't run inside the trixie 18 image: libssl.so.1.1).
+            # Remove once healthy to let the 16-trixie -> 18-trixie upgrade proceed.
+            imageName: ghcr.io/cloudnative-pg/postgresql:16.16-standard-trixie@sha256:c1d2ebeaf7b254264bdb63997270cc9d5e007ba5be4efe6112ae801d1ad68118
+            storage:
+              size: 1Gi
+            walStorage:
+              size: 1Gi
